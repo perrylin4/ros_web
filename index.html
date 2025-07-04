@@ -587,6 +587,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/roslib@1.2.0/build/roslib.min.js"></script>
     <script>
+        const ip = 'ws://192.168.31.222:'
+        const port = '9090'; // 替换为你的Rosbridge服务器端口
+        
         // 全局变量
         let verticalValue = 0.5;
         let verticalActive = false;
@@ -1018,9 +1021,6 @@
         let cmdVel;
         let height;
         let connected = false;
-
-        const ip = 'ws://192.168.31.222:'
-        const port = '9090'; // 替换为你的Rosbridge服务器端口
 
         function startConnection() {
             ros = new ROSLIB.Ros({
