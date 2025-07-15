@@ -16,15 +16,18 @@ sudo apt install ros-humble-rosbridge-server
 ```
 
 ### 2.修改连接配置
-在index.html中约590行处修改ROS bridge地址：
-```javascript
-const ip = 'ws://YOUR_HOST_IP:' // 改为主机IP
-const port = '9090';             // Rosbridge端口
+在config.json中修改ROS bridge地址：
+```json
+{
+    "rosbridge_ip": "<你的rosbridge ip,通常是本机局域网中ip>",
+    "rosbridge_port": "<你的rosbridge端口,默认是9090>",
+    "http_port": <遥控器端口，访问用>
+}
 ```
+
 
 ### 3.启动
 ```bash
-chmod +x launch.sh
 bash ./launch.sh
 ```
 
