@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三指控制系统 | 多点触控修复版</title>
+    <title>Robot遥控器</title>
     <style>
         * {
             box-sizing: border-box;
@@ -587,8 +587,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/roslib@1.2.0/build/roslib.min.js"></script>
     <script>
-        const ip = 'ws://192.168.31.222:'
+        const ip = '192.168.31.248:'
         const port = '9090'; // 替换为你的Rosbridge服务器端口
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (!response.ok) throw new Error('配置文件加载失败');
+                const config_data = await response.json();
+                console.log('配置加载成功:', config_data);
+
+                if (!config_data.rosbridge_ip || !config_data.rosbridge_port || !config_data.http_port) {
+                    throw new Error('配置文件缺少必要字段');
+                }
+                return config_data;
+            } catch (error) {
+                console.error('配置加载错误:', error);
+                // 提供默认配置作为回退
+                return {
+                    rosbridge_ip: "192.168.31.248",
+                    rosbridge_port: "9090",
+                    http_port: 8080,
+                    _isFallBack: true
+                };
+            }
+        }
         
         // 全局变量
         let verticalValue = 0.5;
@@ -977,9 +999,25 @@
                 document.getElementById('right-x-output').textContent = "0.00";
             }
         }
+        let config = {
+            rosbridge_ip: "192.168.31.248",
+            rosbridge_port: "9090",
+            http_port: 8080
+        }
         
         // 页面加载完成后初始化
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            const LoadedConfig = await loadConfig();
+
+            if (LoadedConfig._isFallBack) {
+                updateDebugInfo('使用默认配置: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port);
+            } else {
+                updateDebugInfo('加载配置成功: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port);
+            }
+            config = LoadedConfig; // 更新全局配置
+            
+            // 在界面上显示当前配置
+            updateDebugInfo(`加载配置: ROS ${config.rosbridge_ip}:${config.rosbridge_port}, HTTP端口 ${config.http_port}`);
             // 初始化高度滑块
             initVerticalSlider();
             
@@ -997,7 +1035,7 @@
                 if (ros) {
                     ros.close();
                     updateDebugInfo('已断开与ROS服务器的连接');
-                    document.getElementById('connectBtn').textContent = '连接';
+                    document.getElementById('connectBtn').textContent = '连接 ROS';
                     document.getElementById('disconnectBtn').textContent = '断开连接';
                     document.getElementById('ros-status').textContent = '未连接';
                     document.getElementById('ros-indicator').className = 'indicator disconnected';
@@ -1024,7 +1062,7 @@
 
         function startConnection() {
             ros = new ROSLIB.Ros({
-                url: 'ws://192.168.31.222:9090' // 替换为你的Rosbridge服务器地址,主要将 localhost 改成你的主机IP地址，比如 ws://192.168.1.2:9090
+                url: `ws://${config.rosbridge_ip}:${config.rosbridge_port}`
             });
 
             ros.on('connection', () => {
