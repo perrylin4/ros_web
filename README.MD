@@ -21,7 +21,7 @@ sudo apt install ros-humble-rosbridge-server
 {
     "rosbridge_ip": "<你的rosbridge ip,通常是本机局域网中ip>",
     "rosbridge_port": "<你的rosbridge端口,默认是9090>",
-    "http_port": <遥控器端口，访问用>
+    "http_port": "<遥控器端口，访问用>"
 }
 ```
 
