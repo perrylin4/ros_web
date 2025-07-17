@@ -1222,7 +1222,7 @@
                 angular: {
                     x: 0,
                     y: verticalValue, // 假设高度控制影响y轴
-                    z: rightOutput.x // 假设右摇杆控制角速度
+                    z: -rightOutput.x // 假设右摇杆控制角速度
                 }
             });
 
@@ -1230,7 +1230,7 @@
                 data: heightOutput // 使用高度输出值
             });
             // 发布消息
-            console.log(`Publishing: linear x=${twist.linear.x}, y=${twist.linear.y}, angular y=${twist.angular.y}, z=${-twist.angular.z}`);
+            console.log(`Publishing: linear x=${twist.linear.x}, y=${twist.linear.y}, angular y=${twist.angular.y}, z=${twist.angular.z}`);
             cmdVel.publish(twist);
             height.publish(heightMsg);
             document.getElementById('message-count').textContent = parseInt(document.getElementById('message-count').textContent) + 1;
