@@ -609,7 +609,7 @@
     <!-- 按钮行 - 6个按钮 -->
     <div class="button-row">
         <button class="action-btn" id="reset-all">reset</button>
-        <button class="action-btn">自动返航</极速码字button>
+        <button class="action-btn" id="jump-btn">jump</button>
         <button class="action-btn">速度+</button>
         <button class="action-btn">速度-</button>
         <button class="action-btn">地图</button>
@@ -1446,9 +1446,7 @@
             document.getElementById('reset-all').addEventListener('click', resetAllControls);
             
             // 添加上升按钮事件（第二个按钮改为起跳功能）
-            const jumpBtn = document.querySelector('.button-row button:nth-child(2)');
-            jumpBtn.id = 'jump-btn';
-            jumpBtn.textContent = '起跳';
+            const jumpBtn = document.getElementById('jump-btn');
             jumpBtn.addEventListener('click', triggerJump);
         });
 
