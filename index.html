@@ -259,6 +259,7 @@
             flex: 0 0 100px;
             margin: 0 0 0 600px;
             order: 1;
+            left: 50px;
         }
         
         .vertical-slider-label {
@@ -291,6 +292,65 @@
         }
         
         .vertical-slider-knob {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 
+                0 0 15px rgba(255, 85, 0, 0.8),
+                0 0 30px rgba(255, 85, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.1s;
+        }
+
+        /* 倾角控制竖条 - 位于中间位置 */
+        .pitch-slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 215px;
+            position: relative;
+            flex: 0 0 100px;
+            margin: 0 0 250px 0px;
+            order: 1;
+            left: 150px;
+        }
+        
+        .pitch-slider-label {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+            font-weight: 700;
+        }
+        
+        .pitch-slider-background {
+            width: 35px;
+            height: 180px;
+            background: rgba(100, 180, 255, 0.3);
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.5),
+                0 5px 20px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .fill-indicator2 {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #ff5500, #ff9966);
+            border-radius: 0 0 20px 20px;
+            transition: height 0.1s;
+        }
+        
+        .pitch-slider-knob {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -576,6 +636,15 @@
             </div>
         </div>
 
+        <!-- 倾角控制竖条 - 位于右中 -->
+        <div class="pitch-slider-container">
+            <div class="pitch-slider-label">倾角控制</div>
+            <div class="pitch-slider-background" id="pitch-slider">
+                <div class="fill-indicator2" id="fill-indicator2"></div>
+                <div class="pitch-slider-knob" id="pitch-knob"></div>
+            </div>
+        </div>
+
         <!-- 倾角控制竖条 - 位于 -->
         
         <!-- 右侧摇杆 - 旋转控制 -->
@@ -606,6 +675,10 @@
             <div class="coord-item">
                 <div class="coord-label">高度控制</div>
                 <div id="vertical-value" class="coord-value">0.50</div>
+            </div>
+            <div class="coord-item">
+                <div class="coord-label">倾角控制</div>
+                <div id="pitch-value" class="coord-value">0.50</div>
             </div>
         </div>
     </div>
@@ -657,13 +730,18 @@
         let activeTouches = {
             left: null,
             vertical: null,
-            right: null
+            right: null,
+            pitch: null
         };
         
         // 高度滑块控制元素
         const verticalKnob = document.getElementById('vertical-knob');
         const verticalSlider = document.getElementById('vertical-slider');
         const fillIndicator = document.getElementById('fill-indicator');
+
+        const pitchKnob = document.getElementById('pitch-knob');
+        const pitchSlider = document.getElementById('pitch-slider');
+        const fillIndicator2 = document.getElementById('fill-indicator2');
         
         // 摇杆元素
         const leftJoystickOuter = document.getElementById('left-outer');
@@ -854,6 +932,115 @@
             // 调试信息
             updateDebugInfo("height-info",`高度值: ${verticalValue.toFixed(2)}, Y位置: ${constrainedY.toFixed(0)}px`);
         }
+
+        let pitchValue = 0.5;
+        let pitchActive = false;
+        let pitchStartY = 0;
+        let pitchSliderHeight = 200;
+
+        // 初始化倾角滑块
+        function initPitchSlider() {
+            const sliderRect = pitchSlider.getBoundingClientRect();
+            pitchSliderHeight = sliderRect.height;
+            const knobHeight = pitchKnob.offsetHeight;
+            const maxY = pitchSliderHeight - knobHeight;
+            const currentY = maxY * (1 - pitchValue);
+            
+            pitchKnob.style.top = currentY + 'px';
+            fillIndicator2.style.height = (pitchValue * 100) + '%';
+            
+            updateDebugInfo("pitch-init", `倾角控制初始化完成: 总高=${pitchSliderHeight}px, 滑块位置=${currentY}px`);
+        }
+
+        // 更新倾角值
+        function updatePitchValue(yPos) {
+            const knobHeight = pitchKnob.offsetHeight;
+            const minY = 0;
+            const maxY = pitchSliderHeight - knobHeight;
+            
+            let constrainedY = Math.max(minY, Math.min(maxY, yPos));
+            const newValue = 1 - (constrainedY / maxY);
+            pitchValue = newValue;
+            
+            pitchKnob.style.top = constrainedY + 'px';
+            fillIndicator2.style.height = (newValue * 100) + '%';
+            
+            // 更新显示值
+            const pitchDisplay = document.getElementById('pitch-value');
+            if(pitchDisplay) {
+                pitchDisplay.textContent = pitchValue.toFixed(2);
+            }
+            
+            updateDebugInfo("pitch-info", `倾角值: ${pitchValue.toFixed(2)}, Y位置: ${constrainedY.toFixed(0)}px`);
+        }
+
+        // 设置倾角滑块事件
+        function setupPitchSliderEvents() {
+            // 滑块触摸开始
+            pitchKnob.addEventListener('touchstart', function(e) {
+                if (activeTouches.pitch !== null) return;
+                const touch = e.changedTouches[0];
+                pitchActive = true;
+                activeTouches.pitch = touch.identifier;
+                
+                const knobRect = pitchKnob.getBoundingClientRect();
+                pitchStartY = touch.clientY - knobRect.top;
+                
+                pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
+                pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
+                
+                e.preventDefault();
+                updateDebugInfo("pitch-info", "倾角滑块开始触摸");
+            }, { passive: false });
+            
+            // 背景触摸
+            pitchSlider.addEventListener('touchstart', function(e) {
+                if (activeTouches.pitch !== null) return;
+                const touch = e.changedTouches[0];
+                pitchActive = true;
+                activeTouches.pitch = touch.identifier;
+                
+                const sliderRect = pitchSlider.getBoundingClientRect();
+                const newY = touch.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
+                
+                updatePitchValue(newY);
+                
+                pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
+                pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
+                
+                e.preventDefault();
+                updateDebugInfo("pitch-info", "倾角条触摸开始");
+            }, { passive: false });
+            
+            // 鼠标事件
+            pitchKnob.addEventListener('mousedown', function(e) {
+                pitchActive = true;
+                const knobRect = pitchKnob.getBoundingClientRect();
+                pitchStartY = e.clientY - knobRect.top;
+                
+                pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
+                pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
+                
+                e.preventDefault();
+                updateDebugInfo("pitch-info", "倾角滑块鼠标按下");
+            });
+            
+            pitchSlider.addEventListener('mousedown', function(e) {
+                if (e.target === pitchSlider || e.target === fillIndicator2) {
+                    pitchActive = true;
+                    const sliderRect = pitchSlider.getBoundingClientRect();
+                    const newY = e.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
+                    
+                    updatePitchValue(newY);
+                    
+                    pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
+                    pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
+                    
+                    e.preventDefault();
+                    updateDebugInfo("pitch-info", "倾角条鼠标按下");
+                }
+            });
+        }
         
         // 摇杆功能 - 支持多点触控
         function setupJoystickEvents() {
@@ -996,6 +1183,18 @@
                     // 更新高度值
                     updateVerticalValue(newY);
                 }
+
+                // 更新倾角条
+                if (activeTouches.pitch === touch.identifier) {
+                    const sliderRect = pitchSlider.getBoundingClientRect();
+                    let newY;
+                    if (touch.target === pitchKnob) {
+                        newY = touch.clientY - sliderRect.top - pitchStartY;
+                    } else {
+                        newY = touch.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
+                    }
+                    updatePitchValue(newY);
+                }
             }
         }, { passive: false });
         
@@ -1028,6 +1227,15 @@
                     verticalSlider.style.boxShadow = '';
                     updateDebugInfo("height-info","高度滑块结束触摸");
                 }
+
+                // 重置倾角条
+                if (activeTouches.pitch === touch.identifier) {
+                    pitchActive = false;
+                    activeTouches.pitch = null;
+                    pitchKnob.style.transform = 'translateX(-50%) scale(1)';
+                    pitchSlider.style.boxShadow = '';
+                    updateDebugInfo("pitch-info", "倾角滑块结束触摸");
+                }
             }
         });
         
@@ -1052,6 +1260,12 @@
                 const centerY = rect.top + rect.height/2;
                 updateJoystickPosition('right', e.clientX - centerX, e.clientY - centerY);
             }
+
+            if (pitchActive) {
+                const sliderRect = pitchSlider.getBoundingClientRect();
+                const newY = e.clientY - sliderRect.top - pitchStartY;
+                updatePitchValue(newY);
+            }
         });
         
         // 鼠标抬起处理
@@ -1071,6 +1285,13 @@
             if (activeTouches.right === 'mouse') {
                 resetJoystick('right');
                 active极速码字Touches.right = null;
+            }
+
+            if (pitchActive) {
+                pitchActive = false;
+                pitchKnob.style.transform = 'translateX(-50%) scale(1)';
+                pitchSlider.style.boxShadow = '';
+                updateDebugInfo("pitch-info", "倾角滑块鼠标抬起");
             }
         });
         
@@ -1110,10 +1331,12 @@
             config = LoadedConfig; // 更新全局配置
             // 初始化高度滑块
             initVerticalSlider();
+            initPitchSlider();
             
             // 设置事件监听
             setupVerticalSliderEvents();
             setupJoystickEvents();
+            setupPitchSliderEvents();
             
             // 按钮事件
             document.getElementById('connectBtn').addEventListener('click', function() {
@@ -1141,6 +1364,7 @@
             // 窗口大小变化时重新计算位置
             window.addEventListener('resize', function() {
                 initVerticalSlider();
+                initPitchSlider();
                 updateDebugInfo("sys-info",'重新计算所有控制位置');
             });
             // 在初始化部分添加防抖的resize处理
@@ -1223,7 +1447,7 @@
                 },
                 angular: {
                     x: 0,
-                    y: verticalValue, // 假设高度控制影响y轴
+                    y: pitchValue, // 假设高度控制影响y轴
                     z: -rightOutput.x // 假设右摇杆控制角速度
                 }
             });
