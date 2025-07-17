@@ -608,7 +608,7 @@
     
     <!-- 按钮行 - 6个按钮 -->
     <div class="button-row">
-        <button class="action-btn">开始导航</button>
+        <button class="action-btn" id="reset-all">reset</button>
         <button class="action-btn">自动返航</极速码字button>
         <button class="action-btn">速度+</button>
         <button class="action-btn">速度-</button>
@@ -748,6 +748,9 @@
         const leftJoystickInner = document.getElementById('left-inner');
         const rightJoystickOuter = document.getElementById('right-outer');
         const rightJoystickInner = document.getElementById('right-inner');
+
+        // 按钮元素
+        const resetButton = document.getElementById('reset-all');
         
         // 新版更新调试信息函数
         // 在全局作用域定义消息管理对象
@@ -1318,6 +1321,68 @@
             publish_interval: 10,
             _isFallBack: false,
         }
+
+        let jumpTopic; // 起跳话题对象
+        let jumpInterval; // 起跳定时器
+
+        // 重置所有控制器
+        function resetAllControls() {
+            // 重置摇杆
+            resetJoystick('left');
+            resetJoystick('right');
+            
+            // 重置高度滑块
+            verticalValue = 0.5;
+            const knobHeight = verticalKnob.offsetHeight;
+            const maxY = verticalSliderHeight - knobHeight;
+            verticalKnob.style.top = maxY * 0.5 + 'px';
+            fillIndicator.style.height = '50%';
+            document.getElementById('vertical-value').textContent = '0.50';
+            
+            // 重置倾角滑块
+            pitchValue = 0.5;
+            pitchKnob.style.top = maxY * 0.5 + 'px';
+            fillIndicator2.style.height = '50%';
+            document.getElementById('pitch-value').textContent = '0.50';
+            
+            // 重置输出值
+            heightOutput = 0.5;
+            leftOutput = { x: 0, y: 0 };
+            rightOutput = { x: 0 };
+            
+            updateDebugInfo("sys-reset", "所有控制器已重置");
+        }
+
+        // 触发机器人起跳
+        function triggerJump() {
+            if (!jumpTopic || !connected) {
+                updateDebugInfo("jump-error", "未连接到ROS或jump主题未初始化");
+                return;
+            }
+            
+            let count = 0;
+            const maxCount = 1;
+            const intervalTime = 10; // 10ms * 10 = 100ms
+            
+            clearInterval(jumpInterval); // 清除现有定时器
+            jumpInterval = setInterval(() => {
+                if (count >= maxCount) {
+                    clearInterval(jumpInterval);
+                    return;
+                }
+                
+                const jumpMsg = new ROSLIB.Message({
+                    data: true
+                });
+                
+                jumpTopic.publish(jumpMsg);
+                document.getElementById('message-count').textContent = 
+                    parseInt(document.getElementById('message-count').textContent) + 1;
+                
+                updateDebugInfo("jump-publish", `发送起跳指令 ${count+1}/${maxCount}`);
+                count++;
+            }, intervalTime);
+        }
         
         // 页面加载完成后初始化
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1376,6 +1441,15 @@
                     updateDebugInfo("sys-info",'窗口尺寸更新完成');
                 }, 500); // 500ms防抖
             });
+
+            // 添加重置按钮事件
+            document.getElementById('reset-all').addEventListener('click', resetAllControls);
+            
+            // 添加上升按钮事件（第二个按钮改为起跳功能）
+            const jumpBtn = document.querySelector('.button-row button:nth-child(2)');
+            jumpBtn.id = 'jump-btn';
+            jumpBtn.textContent = '起跳';
+            jumpBtn.addEventListener('click', triggerJump);
         });
 
         let ros;
@@ -1399,6 +1473,11 @@
                     ros: ros,
                     name: '/height',
                     messageType: 'std_msgs/Float32'
+                });
+                jumpTopic = new ROSLIB.Topic({
+                    ros: ros,
+                    name: '/jump',
+                    messageType: 'std_msgs/Bool'
                 });
                 updateDebugInfo("ros-connection",'已连接到ROS桥接');
                 document.getElementById('connectBtn').textContent = '已连接';
