@@ -1093,7 +1093,9 @@
         let config = {
             rosbridge_ip: "192.168.31.248",
             rosbridge_port: "9090",
-            http_port: 8080
+            http_port: 8080,
+            publish_interval: 10,
+            _isFallBack: false,
         }
         
         // 页面加载完成后初始化
@@ -1101,9 +1103,9 @@
             const LoadedConfig = await loadConfig();
 
             if (LoadedConfig._isFallBack) {
-                updateDebugInfo("ros-config",'使用默认配置: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port);
+                updateDebugInfo("ros-config",'使用默认配置: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port + ', 发布频率 ' + config.publish_interval + 'ms');
             } else {
-                updateDebugInfo("ros-config",'加载配置成功: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port);
+                updateDebugInfo("ros-config",'加载配置成功: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port + ', 发布频率 ' + config.publish_interval + 'ms');
             }
             config = LoadedConfig; // 更新全局配置
             // 初始化高度滑块
@@ -1241,7 +1243,7 @@
             if (connected) {
                 move();
             }
-        }, 10);
+        }, config.publish_interval);
         
     </script>
 </body>
