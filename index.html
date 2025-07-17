@@ -575,6 +575,8 @@
                 <div class="vertical-slider-knob" id="vertical-knob"></div>
             </div>
         </div>
+
+        <!-- 倾角控制竖条 - 位于 -->
         
         <!-- 右侧摇杆 - 旋转控制 -->
         <div class="joystick-container" style="order: 2;">
@@ -1213,8 +1215,8 @@
 
             const twist = new ROSLIB.Message({
                 linear: {
-                    x: leftOutput.x,
-                    y: leftOutput.y,
+                    x: -leftOutput.y,
+                    y: leftOutput.x,
                     z: 0
                 },
                 angular: {
@@ -1228,7 +1230,7 @@
                 data: heightOutput // 使用高度输出值
             });
             // 发布消息
-            console.log(`Publishing: linear x=${-twist.linear.y}, y=${twist.linear.x}, angular y=${twist.angular.y}, z=${-twist.angular.z}`);
+            console.log(`Publishing: linear x=${twist.linear.x}, y=${twist.linear.y}, angular y=${twist.angular.y}, z=${-twist.angular.z}`);
             cmdVel.publish(twist);
             height.publish(heightMsg);
             document.getElementById('message-count').textContent = parseInt(document.getElementById('message-count').textContent) + 1;
