@@ -946,7 +946,7 @@
                 leftOutput.y = newDy / maxDistance;
                 document.getElementById('left-x-output').textContent = (-leftOutput.y).toFixed(2);
                 document.getElementById('left-y-output').textContent = leftOutput.x.toFixed(2);
-                updateDebugInfo("left-info",`左摇杆: X:${leftOutput.x.toFixed(2)}, Y:${leftOutput.y.toFixed(2)}`);
+                updateDebugInfo("left-info",`左摇杆: X:${-leftOutput.y.toFixed(2)}, Y:${leftOutput.x.toFixed(2)}`);
             } else {
                 rightOutput.x = newDx / maxDistance;
                 document.getElementById('right-x-output').textContent = rightOutput.x.toFixed(2);
@@ -1228,7 +1228,7 @@
                 data: heightOutput // 使用高度输出值
             });
             // 发布消息
-            console.log(`Publishing: linear x=${twist.linear.x}, y=${twist.linear.y}, angular y=${twist.angular.y}, z=${twist.angular.z}`);
+            console.log(`Publishing: linear x=${-twist.linear.y}, y=${twist.linear.x}, angular y=${twist.angular.y}, z=${-twist.angular.z}`);
             cmdVel.publish(twist);
             height.publish(heightMsg);
             document.getElementById('message-count').textContent = parseInt(document.getElementById('message-count').textContent) + 1;
