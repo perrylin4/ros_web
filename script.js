@@ -734,11 +734,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const jumpBtn = document.getElementById('jump-btn');
     jumpBtn.addEventListener('click', triggerJump);
 });
-let ros;
-let cmdVel;
-let height;
+let ros = null;
+let cmdVel = null;
+let height = null;
 let connected = false;
+
 function startConnection() {
+    if (ros) {
+        ros.close();
+        ros = null;
+    }
     ros = new ROSLIB.Ros({
         url: `ws://${config.rosbridge_ip}:${config.rosbridge_port}`
     });
