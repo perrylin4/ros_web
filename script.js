@@ -381,6 +381,7 @@ function setupJoystickEvents() {
     
     // 左侧摇杆鼠标按下
     leftJoystickOuter.addEventListener('mousedown', function(e) {
+        activeTouches.left = 'mouse';
         const rect = leftJoystickOuter.getBoundingClientRect();
         const centerX = rect.left + rect.width/2;
         const centerY = rect.top + rect.height/2;
@@ -391,12 +392,32 @@ function setupJoystickEvents() {
     
     // 右侧摇杆鼠标按下
     rightJoystickOuter.addEventListener('mousedown', function(e) {
+        activeTouches.right = 'mouse';
         const rect = rightJoystickOuter.getBoundingClientRect();
         const centerX = rect.left + rect.width/2;
         const centerY = rect.top + rect.height/2;
         
         updateJoystickPosition('right', e.clientX - centerX, e.clientY - centerY);
         e.preventDefault();
+    });
+
+    // 新增鼠标移动事件绑定
+    leftJoystickOuter.addEventListener('mousemove', function(e) {
+        if (activeTouches.left === 'mouse') {
+            const rect = leftJoystickOuter.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            updateJoystickPosition('left', e.clientX - centerX, e.clientY - centerY);
+        }
+    });
+
+    rightJoystickOuter.addEventListener('mousemove', function(e) {
+        if (activeTouches.right === 'mouse') {
+            const rect = rightJoystickOuter.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            updateJoystickPosition('right', e.clientX - centerX, e.clientY - centerY);
+        }
     });
 }
 
@@ -430,11 +451,17 @@ function updateJoystickPosition(type, dx, dy) {
     if (type === 'left') {
         leftOutput.x = newDx / maxDistance;
         leftOutput.y = newDy / maxDistance;
+        if (leftOutput.y * leftOutput.y + leftOutput.x * leftOutput.x < 0.1) {
+            leftOutput = { x: 0, y: 0 }; // 重置为0
+        }
         document.getElementById('left-x-output').textContent = (-leftOutput.y).toFixed(2);
         document.getElementById('left-y-output').textContent = leftOutput.x.toFixed(2);
         updateDebugInfo("left-info",`左摇杆: X:${-leftOutput.y.toFixed(2)}, Y:${leftOutput.x.toFixed(2)}`);
     } else {
         rightOutput.x = newDx / maxDistance;
+        if (rightOutput.x * rightOutput.x < 0.1) {
+            rightOutput = { x: 0 }; // 重置为0
+        }
         document.getElementById('right-x-output').textContent = rightOutput.x.toFixed(2);
         updateDebugInfo("right-info",`右摇杆: X:${rightOutput.x.toFixed(2)}`);
     }
@@ -547,6 +574,7 @@ document.addEventListener('mousemove', function(e) {
         const centerX = rect.left + rect.width/2;
         const centerY = rect.top + rect.height/2;
         updateJoystickPosition('left', e.clientX - centerX, e.clientY - centerY);
+        e.preventDefault();
     }
     
     if (activeTouches.right === 'mouse') {
@@ -554,6 +582,7 @@ document.addEventListener('mousemove', function(e) {
         const centerX = rect.left + rect.width/2;
         const centerY = rect.top + rect.height/2;
         updateJoystickPosition('right', e.clientX - centerX, e.clientY - centerY);
+        e.preventDefault();
     }
     if (pitchActive) {
         const sliderRect = pitchSlider.getBoundingClientRect();
@@ -578,7 +607,7 @@ document.addEventListener('mouseup', function() {
     
     if (activeTouches.right === 'mouse') {
         resetJoystick('right');
-        active极速码字Touches.right = null;
+        activeTouches.right = null;
     }
     if (pitchActive) {
         pitchActive = false;
@@ -613,6 +642,9 @@ let config = {
 }
 let jumpTopic; // 起跳话题对象
 let jumpInterval; // 起跳定时器
+
+let flipTopic; // 翻转话题对象
+let flipInterval; // 翻转定时器
 // 重置所有控制器
 function resetAllControls() {
     // 重置摇杆
@@ -667,6 +699,37 @@ function triggerJump() {
             parseInt(document.getElementById('message-count').textContent) + 1;
         
         updateDebugInfo("jump-publish", `发送起跳指令 ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+// 触发机器人起跳
+function triggerFlip() {
+    if (!flipTopic || !connected) {
+        updateDebugInfo("flip-error", "未连接到ROS或flip主题未初始化");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(flipInterval); // 清除现有定时器
+    flipInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(flipInterval);
+            return;
+        }
+        
+        const flipMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        flipTopic.publish(flipMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("flip-publish", `发送起跳指令 ${count+1}/${maxCount}`);
         count++;
     }, intervalTime);
 }
@@ -733,6 +796,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     // 添加上升按钮事件（第二个按钮改为起跳功能）
     const jumpBtn = document.getElementById('jump-btn');
     jumpBtn.addEventListener('click', triggerJump);
+
+    const flipBtn = document.getElementById('flip-btn');
+    flipBtn.addEventListener('click', triggerFlip);
 });
 let ros = null;
 let cmdVel = null;
@@ -764,12 +830,19 @@ function startConnection() {
             name: '/jump',
             messageType: 'std_msgs/Bool'
         });
+        flipTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/flip',
+            messageType: 'std_msgs/Bool'
+        });
         updateDebugInfo("ros-connection",'已连接到ROS桥接');
         document.getElementById('connectBtn').textContent = '已连接';
         document.getElementById('disconnectBtn').textContent = '断开连接';
         document.getElementById('ros-status').textContent = '已连接';
         document.getElementById('ros-indicator').className = 'indicator connected';
         connected = true;
+        jumpTopic.publish(new ROSLIB.Message({ data: false })); // 初始化起跳话题
+        flipTopic.publish(new ROSLIB.Message({ data: false })); // 初始化翻转话题
     });
     ros.on('error', (error) => {
         console.error('Error connecting to ROS: ', error);

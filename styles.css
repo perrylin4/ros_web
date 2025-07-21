@@ -163,21 +163,34 @@ body {
     justify-content: space-between;
     align-items: flex-end;
     z-index: 20;
-    padding: 0 20px;
+    padding: 0;
 }
 
 /* 摇杆容器 */
 .joystick-container {
+    height: 400px;
+    justify-content: flex-end;
+    margin-top: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     flex: 1;
 }
 
+.joystick-container[style*="order: 0"] {
+    align-self: flex-start;
+    margin-left: -200px;
+}
+
+.joystick-container[style*="order: 2"] {
+    align-self: flex-end;
+    margin-right: -200px;
+}
+
 .joystick-label {
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     text-align: center;
@@ -186,8 +199,8 @@ body {
 /* 摇杆样式 */
 .joystick-outer {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background: rgba(40, 70, 120, 0.6);
     border: 2px solid rgba(100, 180, 255, 0.5);
@@ -195,7 +208,7 @@ body {
         inset 0 0 30px rgba(0, 0, 0, 0.5),
         0 10px 40px rgba(0, 0, 0, 0.7);
     overflow: visible;
-    margin: 0 auto;
+    margin: 0 !important;
 }
 
 /* 摇杆网格背景 */
@@ -218,8 +231,8 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
     box-shadow: 
@@ -250,9 +263,9 @@ body {
     height: 215px;
     position: relative;
     flex: 0 0 100px;
-    margin: 0 0 0 600px;
-    order: 1;
-    left: 50px;
+    margin: 0 0 250px 0;
+    order: 0;
+    right: 400px;
 }
 
 .vertical-slider-label {
@@ -273,15 +286,6 @@ body {
         inset 0 0 15px rgba(0, 0, 0, 0.5),
         0 5px 20px rgba(0, 0, 0, 0.6);
     overflow: hidden;
-}
-
-.fill-indicator {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: linear-gradient(to top, #ff5500, #ff9966);
-    border-radius: 0 0 20px 20px;
-    transition: height 0.1s;
 }
 
 .vertical-slider-knob {
@@ -310,8 +314,8 @@ body {
     position: relative;
     flex: 0 0 100px;
     margin: 0 0 250px 0px;
-    order: 1;
-    left: 150px;
+    order: 2;
+    left: 400px;
 }
 
 .pitch-slider-label {
@@ -333,14 +337,14 @@ body {
         0 5px 20px rgba(0, 0, 0, 0.6);
     overflow: hidden;
 }
-
+.fill-indicator,
 .fill-indicator2 {
     position: absolute;
     bottom: 0;
     width: 100%;
     background: linear-gradient(to top, #ff5500, #ff9966);
     border-radius: 0 0 20px 20px;
-    transition: height 0.1s;
+    transition: none !important;
 }
 
 .pitch-slider-knob {
@@ -433,7 +437,7 @@ body {
 .debug-container {
     position: fixed; /* 替换原有定位 */
     top: 80px; /* 下移避开顶部状态栏 */
-    right: 15px; /* 右侧定位 */
+    right: 38%; /* 右侧定位 */
     width: 300px; /* 限制宽度 */
     max-height: 50vh; /* 限制高度 */
     overflow-y: auto; /* 支持滚动 */
@@ -527,6 +531,9 @@ body {
         top: 70px;
         font-size: 12px; /* 缩小字体 */
     }
+    .joystick-container {
+        min-width: 35%;
+    }
 }
 
 @media (max-width: 600px) {
@@ -536,7 +543,14 @@ body {
     }
     
     .joystick-container {
-        min-width: 45%;
+        height: 120px;
+        margin-top: auto;
+        min-width: 40%;
+        margin: 0 10px;
+    }
+
+    .joystick-outer {
+        height: 100px;
     }
     
     .vertical-slider-container {
