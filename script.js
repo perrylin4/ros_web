@@ -31,7 +31,7 @@ let verticalSliderHeight = 200;
 // 摇杆输出值
 let leftOutput = { x: 0, y: 0 };
 let rightOutput = { x: 0 };
-let heightOutput = 0;
+let heightOutput = 0.5;
 
 // 活动触摸点记录
 let activeTouches = {
