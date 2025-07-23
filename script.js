@@ -3,15 +3,15 @@ const port = '9090'; // 替换为你的Rosbridge服务器端口
 async function loadConfig() {
     try {
         const response = await fetch('config.json');
-        if (!response.ok) throw new Error('配置文件加载失败');
+        if (!response.ok) throw new Error('Failed to load config file');
         const config_data = await response.json();
-        console.log('配置加载成功:', config_data);
+        console.log('Config file loaded successfully:', config_data);
         if (!config_data.rosbridge_ip || !config_data.rosbridge_port || !config_data.http_port) {
-            throw new Error('配置文件缺少必要字段');
+            throw new Error('Necessary configuration fields are missing');
         }
         return config_data;
     } catch (error) {
-        console.error('配置加载错误:', error);
+        console.error('Error while loading config:', error);
         // 提供默认配置作为回退
         return {
             rosbridge_ip: "192.168.31.248",
@@ -128,7 +128,7 @@ function initVerticalSlider() {
     verticalKnob.style.top = currentY + 'px';
     fillIndicator.style.height = (verticalValue * 100) + '%';
     
-    updateDebugInfo('heigh-init',`高度控制初始化完成: 总高=${verticalSliderHeight}px, 滑块位置=${currentY}px`);
+    updateDebugInfo('heigh-init',`Height initialization finished: total height=${verticalSliderHeight}px, knob height=${currentY}px`);
 }
 
 // 高度条事件处理 - 支持多点触控
@@ -151,7 +151,7 @@ function setupVerticalSliderEvents() {
         verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("height-info","高度滑块开始触摸");
+        updateDebugInfo("height-info","Height slider touch start");
     }, { passive: false });
     
     // 滑块背景触摸
@@ -174,7 +174,7 @@ function setupVerticalSliderEvents() {
         verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("height-info","高度条触摸开始");
+        updateDebugInfo("height-info","Height slider touch start");
     }, { passive: false });
     
     // 滑块鼠标按下
@@ -187,7 +187,7 @@ function setupVerticalSliderEvents() {
         verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("height-info","高度滑块鼠标按下");
+        updateDebugInfo("height-info","Height slider mouse start");
     });
     
     verticalSlider.addEventListener('mousedown', function(e) {
@@ -202,7 +202,7 @@ function setupVerticalSliderEvents() {
             verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
             
             e.preventDefault();
-            updateDebugInfo("height-info","高度条鼠标按下");
+            updateDebugInfo("height-info","Height slider mouse start");
         }
     });
 }
@@ -231,7 +231,7 @@ function updateVerticalValue(yPos) {
     heightOutput = verticalValue; // 更新高度输出值
     
     // 调试信息
-    updateDebugInfo("height-info",`高度值: ${verticalValue.toFixed(2)}, Y位置: ${constrainedY.toFixed(0)}px`);
+    updateDebugInfo("height-info",`Height: ${verticalValue.toFixed(2)}, Y Coordinate: ${constrainedY.toFixed(0)}px`);
 }
 let pitchValue = 0.5;
 let pitchActive = false;
@@ -248,7 +248,7 @@ function initPitchSlider() {
     pitchKnob.style.top = currentY + 'px';
     fillIndicator2.style.height = (pitchValue * 100) + '%';
     
-    updateDebugInfo("pitch-init", `倾角控制初始化完成: 总高=${pitchSliderHeight}px, 滑块位置=${currentY}px`);
+    updateDebugInfo("pitch-init", `Pitch initialization finished: total height=${pitchSliderHeight}px, knob height=${currentY}px`);
 }
 // 更新倾角值
 function updatePitchValue(yPos) {
@@ -269,7 +269,7 @@ function updatePitchValue(yPos) {
         pitchDisplay.textContent = pitchValue.toFixed(2);
     }
     
-    updateDebugInfo("pitch-info", `倾角值: ${pitchValue.toFixed(2)}, Y位置: ${constrainedY.toFixed(0)}px`);
+    updateDebugInfo("pitch-info", `Pitch: ${pitchValue.toFixed(2)}, Y cooridinate: ${constrainedY.toFixed(0)}px`);
 }
 // 设置倾角滑块事件
 function setupPitchSliderEvents() {
@@ -287,7 +287,7 @@ function setupPitchSliderEvents() {
         pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("pitch-info", "倾角滑块开始触摸");
+        updateDebugInfo("pitch-info", "Pitch knob touch start");
     }, { passive: false });
     
     // 背景触摸
@@ -306,7 +306,7 @@ function setupPitchSliderEvents() {
         pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("pitch-info", "倾角条触摸开始");
+        updateDebugInfo("pitch-info", "Pitch knob touch start");
     }, { passive: false });
     
     // 鼠标事件
@@ -319,7 +319,7 @@ function setupPitchSliderEvents() {
         pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
         
         e.preventDefault();
-        updateDebugInfo("pitch-info", "倾角滑块鼠标按下");
+        updateDebugInfo("pitch-info", "Pitch knob mouse start");
     });
     
     pitchSlider.addEventListener('mousedown', function(e) {
@@ -334,7 +334,7 @@ function setupPitchSliderEvents() {
             pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
             
             e.preventDefault();
-            updateDebugInfo("pitch-info", "倾角条鼠标按下");
+            updateDebugInfo("pitch-info", "Pitch knob mouse start");
         }
     });
 }
@@ -357,7 +357,7 @@ function setupJoystickEvents() {
         updateJoystickPosition('left', touch.clientX - centerX, touch.clientY - centerY);
         
         e.preventDefault();
-        updateDebugInfo("left-joystick","左摇杆开始触摸");
+        updateDebugInfo("left-joystick","Left joystick touch start");
     }, { passive: false });
     
     // 右侧摇杆触摸开始
@@ -376,7 +376,7 @@ function setupJoystickEvents() {
         updateJoystickPosition('right', touch.clientX - centerX, touch.clientY - centerY);
         
         e.preventDefault();
-        updateDebugInfo("right-joystick","右摇杆开始触摸");
+        updateDebugInfo("right-joystick","Right joystick touch start");
     }, { passive: false });
     
     // 左侧摇杆鼠标按下
@@ -456,14 +456,14 @@ function updateJoystickPosition(type, dx, dy) {
         }
         document.getElementById('left-x-output').textContent = (-leftOutput.y).toFixed(2);
         document.getElementById('left-y-output').textContent = leftOutput.x.toFixed(2);
-        updateDebugInfo("left-info",`左摇杆: X:${-leftOutput.y.toFixed(2)}, Y:${leftOutput.x.toFixed(2)}`);
+        updateDebugInfo("left-info",`left joystick: X:${-leftOutput.y.toFixed(2)}, Y:${leftOutput.x.toFixed(2)}`);
     } else {
         rightOutput.x = newDx / maxDistance;
         if (rightOutput.x * rightOutput.x < 0.1) {
             rightOutput = { x: 0 }; // 重置为0
         }
         document.getElementById('right-x-output').textContent = rightOutput.x.toFixed(2);
-        updateDebugInfo("right-info",`右摇杆: X:${rightOutput.x.toFixed(2)}`);
+        updateDebugInfo("right-info",`right joystick: X:${rightOutput.x.toFixed(2)}`);
     }
 }
 
@@ -530,14 +530,14 @@ document.addEventListener('touchend', function(e) {
         if (activeTouches.left === touch.identifier) {
             resetJoystick('left');
             activeTouches.left = null;
-            updateDebugInfo("left-joystick","左摇杆结束触摸");
+            updateDebugInfo("left-joystick","left joystick touch end");
         }
         
         // 重置右侧摇杆
         if (activeTouches.right === touch.identifier) {
             resetJoystick('right');
             activeTouches.right = null;
-            updateDebugInfo("right-joystick","右摇杆结束触摸");
+            updateDebugInfo("right-joystick","right joystick touch end");
         }
         
         // 重置高度条
@@ -548,7 +548,7 @@ document.addEventListener('touchend', function(e) {
             // 移除活动状态样式
             verticalKnob.style.transform = 'translateX(-50%) scale(1)';
             verticalSlider.style.boxShadow = '';
-            updateDebugInfo("height-info","高度滑块结束触摸");
+            updateDebugInfo("height-info","height slider touch end");
         }
         // 重置倾角条
         if (activeTouches.pitch === touch.identifier) {
@@ -556,7 +556,7 @@ document.addEventListener('touchend', function(e) {
             activeTouches.pitch = null;
             pitchKnob.style.transform = 'translateX(-50%) scale(1)';
             pitchSlider.style.boxShadow = '';
-            updateDebugInfo("pitch-info", "倾角滑块结束触摸");
+            updateDebugInfo("pitch-info", "pitch slider touch end");
         }
     }
 });
@@ -597,7 +597,7 @@ document.addEventListener('mouseup', function() {
         verticalActive = false;
         verticalKnob.style.transform = 'translateX(-50%) scale(1)';
         verticalSlider.style.boxShadow = '';
-        updateDebugInfo("height-info","高度滑块鼠标抬起");
+        updateDebugInfo("height-info","height slider mouse up");
     }
     
     if (activeTouches.left === 'mouse') {
@@ -613,7 +613,7 @@ document.addEventListener('mouseup', function() {
         pitchActive = false;
         pitchKnob.style.transform = 'translateX(-50%) scale(1)';
         pitchSlider.style.boxShadow = '';
-        updateDebugInfo("pitch-info", "倾角滑块鼠标抬起");
+        updateDebugInfo("pitch-info", "pitch slider mouse up");
     }
 });
 
@@ -670,12 +670,12 @@ function resetAllControls() {
     leftOutput = { x: 0, y: 0 };
     rightOutput = { x: 0 };
     
-    updateDebugInfo("sys-reset", "所有控制器已重置");
+    updateDebugInfo("sys-reset", "all controls have been reset");
 }
 // 触发机器人起跳
 function triggerJump() {
     if (!jumpTopic || !connected) {
-        updateDebugInfo("jump-error", "未连接到ROS或jump主题未初始化");
+        updateDebugInfo("jump-error", "Not connected to ROS or jump topic not initialized");
         return;
     }
     
@@ -698,7 +698,7 @@ function triggerJump() {
         document.getElementById('message-count').textContent = 
             parseInt(document.getElementById('message-count').textContent) + 1;
         
-        updateDebugInfo("jump-publish", `发送起跳指令 ${count+1}/${maxCount}`);
+        updateDebugInfo("jump-publish", `publish jump command ${count+1}/${maxCount}`);
         count++;
     }, intervalTime);
 }
@@ -706,7 +706,7 @@ function triggerJump() {
 // 触发机器人起跳
 function triggerFlip() {
     if (!flipTopic || !connected) {
-        updateDebugInfo("flip-error", "未连接到ROS或flip主题未初始化");
+        updateDebugInfo("flip-error", "Not connected to ROS or flip topic not initialized");
         return;
     }
     
@@ -729,7 +729,7 @@ function triggerFlip() {
         document.getElementById('message-count').textContent = 
             parseInt(document.getElementById('message-count').textContent) + 1;
         
-        updateDebugInfo("flip-publish", `发送起跳指令 ${count+1}/${maxCount}`);
+        updateDebugInfo("flip-publish", `publish flip command ${count+1}/${maxCount}`);
         count++;
     }, intervalTime);
 }
@@ -738,9 +738,9 @@ function triggerFlip() {
 window.addEventListener('DOMContentLoaded', async () => {
     const LoadedConfig = await loadConfig();
     if (LoadedConfig._isFallBack) {
-        updateDebugInfo("ros-config",'使用默认配置: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port + ', 发布频率 ' + config.publish_interval + 'ms');
+        updateDebugInfo("ros-config",'Using default config: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms');
     } else {
-        updateDebugInfo("ros-config",'加载配置成功: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP端口 ' + config.http_port + ', 发布频率 ' + config.publish_interval + 'ms');
+        updateDebugInfo("ros-config",'Config loading successfully: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms');
     }
     config = LoadedConfig; // 更新全局配置
     // 初始化高度滑块
@@ -755,31 +755,31 @@ window.addEventListener('DOMContentLoaded', async () => {
     // 按钮事件
     document.getElementById('connectBtn').addEventListener('click', function() {
         startConnection();
-        updateDebugInfo("ros-connection",'尝试连接到ROS服务器...');
+        updateDebugInfo("ros-connection",'Trying to connect to ROS server...');
     });
     
     document.getElementById('disconnectBtn').addEventListener('click', function() {
         if (ros) {
             ros.close();
-            updateDebugInfo("ros-connection",'已断开与ROS服务器的连接');
-            document.getElementById('connectBtn').textContent = '连接 ROS';
-            document.getElementById('disconnectBtn').textContent = '断开连接';
-            document.getElementById('ros-status').textContent = '未连接';
+            updateDebugInfo("ros-connection",'Disconnected from ROS server');
+            document.getElementById('connectBtn').textContent = 'Connect';
+            document.getElementById('disconnectBtn').textContent = 'Disconnect';
+            document.getElementById('ros-status').textContent = 'Not connected';
             document.getElementById('ros-indicator').className = 'indicator disconnected';
             connected = false;
         } else {
-            updateDebugInfo("ros-connection",'当前未连接到ROS服务器');
+            updateDebugInfo("ros-connection",'No active ROS connection');
         }
     });
     
     // 初始状态
-    updateDebugInfo("sys-info",'系统初始化完成');
+    updateDebugInfo("sys-info",'System initialized');
     
     // 窗口大小变化时重新计算位置
     window.addEventListener('resize', function() {
         initVerticalSlider();
         initPitchSlider();
-        updateDebugInfo("sys-info",'重新计算所有控制位置');
+        updateDebugInfo("sys-info",'Recalculating positions');
     });
     // 在初始化部分添加防抖的resize处理
     let resizeTimer;
@@ -787,7 +787,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             initVerticalSlider();
-            updateDebugInfo("sys-info",'窗口尺寸更新完成');
+            updateDebugInfo("sys-info",'Window resize complete');
         }, 500); // 500ms防抖
     });
     // 添加重置按钮事件
@@ -835,10 +835,10 @@ function startConnection() {
             name: '/flip',
             messageType: 'std_msgs/Bool'
         });
-        updateDebugInfo("ros-connection",'已连接到ROS桥接');
-        document.getElementById('connectBtn').textContent = '已连接';
-        document.getElementById('disconnectBtn').textContent = '断开连接';
-        document.getElementById('ros-status').textContent = '已连接';
+        updateDebugInfo("ros-connection",'Connected to ROS server');
+        document.getElementById('connectBtn').textContent = 'Connected';
+        document.getElementById('disconnectBtn').textContent = 'Disconnect';
+        document.getElementById('ros-status').textContent = 'Connected';
         document.getElementById('ros-indicator').className = 'indicator connected';
         connected = true;
         jumpTopic.publish(new ROSLIB.Message({ data: false })); // 初始化起跳话题
@@ -850,7 +850,7 @@ function startConnection() {
     });
     ros.on('close', () => {
         console.log('Disconnected from ROS');
-        updateDebugInfo("ros-connection",'已断开与ROS服务器的连接');
+        updateDebugInfo("ros-connection",'Disconnected from ROS server');
     });
 }
 function move(){
