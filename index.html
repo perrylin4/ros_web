@@ -61,7 +61,7 @@
         <!-- 高度控制竖条 - 位于中间 -->
         <div class="vertical-slider-container">
             <div class="vertical-slider-label">高度控制</div>
-            <svg width="300" height="500" class="slider-svg">
+            <svg width="250" height="255" class="slider-svg">
                 <!-- 轨道路径 -->
                 <path id="vertical-track-path" 
                     d="M 25 25 C 75 35 180 100 200 200" stroke="#00549e" 
@@ -81,10 +81,21 @@
         <!-- 倾角控制竖条 - 位于右中 -->
         <div class="pitch-slider-container">
             <div class="pitch-slider-label">倾角控制</div>
-            <div class="pitch-slider-background" id="pitch-slider">
-                <div class="fill-indicator2" id="fill-indicator2"></div>
-                <div class="pitch-slider-knob" id="pitch-knob"></div>
-            </div>
+            <svg width="250" height="255" class="slider-svg">
+                <!-- 轨道路径 -->
+                <path id="pitch-track-path" 
+                    d="M 230 25 C 180 35 75 100 55 200" stroke="#00549e" 
+                    stroke-width="30" fill="none" 
+                    stroke-linecap="round"/>
+                
+                <!-- 填充路径 -->
+                <path id="pitch-fill-path" 
+                     d="M 230 25 C 180 35 75 100 55 200" stroke="#ff7d3c" 
+                     stroke-width="30" fill="none" 
+                     stroke-linecap="round"/>
+            </svg>
+
+            <div id="pitch-slider-knob" class="pitch-slider-knob"></div>
         </div>
 
         <!-- 倾角控制竖条 - 位于 -->

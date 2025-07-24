@@ -49,6 +49,17 @@ function initVerticalSlider() {
     updateVerticalSliderPostion(verticalValue);
 }
 
+const pitchSliderKnob = document.getElementById('pitch-slider-knob');
+const pitchSliderContainer = document.querySelector('.pitch-slider-container');
+let pitchValue = 0.5;
+let pitchActive = false;
+let pitchStartY = 0;
+let pitchSliderHeight = 200;
+
+function initPitchSlider() {
+    updatePitchSliderPosition(pitchValue);
+}
+
 // 贝塞尔曲线变换函数
 function applyVerticalCurveTransform(progress) {
     return getPointOnBezierCurve(
@@ -59,12 +70,27 @@ function applyVerticalCurveTransform(progress) {
         verticalBezierCurvePoints.p3
     );
 }
+function applyPitchCurveTransform(progress) {
+    return getPointOnBezierCurve(
+        progress,
+        pitchBezierCurvePoints.p0,
+        pitchBezierCurvePoints.p1,
+        pitchBezierCurvePoints.p2,
+        pitchBezierCurvePoints.p3
+    );
+}
 const verticalBezierCurvePoints = {
     p0: {x: 25, y: 25},
     p1: {x: 75, y: 35},
     p2: {x: 180, y: 100},
     p3: {x: 200, y: 200}
 };
+const pitchBezierCurvePoints = {
+    p0: {x: 230, y: 25},
+    p1: {x: 180, y: 35},
+    p2: {x: 75, y: 100},
+    p3: {x: 55, y: 200}
+}
 
 function getPointOnBezierCurve(percent, p0, p1, p2, p3) {
     // 确保百分比在0-1之间
@@ -86,7 +112,6 @@ function getPointOnBezierCurve(percent, p0, p1, p2, p3) {
 
 function updateVerticalSliderPostion(progress) {
     verticalValue = progress;
-    verticalutput = progress;
     document.getElementById('vertical-value').textContent = verticalValue.toFixed(2);
     console.info(`Updating vertical slider position: ${verticalValue}`);
     const knobPosition = applyVerticalCurveTransform(progress);
@@ -94,10 +119,22 @@ function updateVerticalSliderPostion(progress) {
     verticalSliderKnob.style.left = `${knobPosition.x}px`;
     verticalSliderKnob.style.top = `${knobPosition.y}px`;
 
-    updateFillPath(progress);
+    updateVerticalFillPath(progress);
 }
 
-function updateFillPath(progress) {
+function updatePitchSliderPosition(progress) {
+    pitchValue = progress;
+    document.getElementById('pitch-value').textContent = pitchValue.toFixed(2);
+    console.info(`Updating pitch slider position: ${pitchValue}`);
+    const knobPosition = applyPitchCurveTransform(progress);
+
+    pitchSliderKnob.style.left = `${knobPosition.x}px`;
+    pitchSliderKnob.style.top = `${knobPosition.y}px`;
+
+    updatePitchFillPath(progress);
+}
+
+function updateVerticalFillPath(progress) {
     const path = document.getElementById('vertical-fill-path');
     const segments = 20;
 
@@ -111,18 +148,18 @@ function updateFillPath(progress) {
     path.setAttribute('d', d);
 }
 
-function initTrackPath() {
-    return;// test
-    const track = document.getElementById('vertical-track-path');
+function updatePitchFillPath(progress) {
+    const path = document.getElementById('pitch-fill-path');
     const segments = 20;
 
-    let d = `M25, 25`;
+    let d = `M230, 25`;
     for (let i = 0; i <= segments; i++) {
-        const p = Math.min(i / segments, 1);
-        const point = applyVerticalCurveTransform(p);
+        const p = Math.min(i / segments, progress);
+        const point = applyPitchCurveTransform(p);
         d += ` L${point.x},${point.y}`;
     }
-    track.setAttribute('d', d);
+
+    path.setAttribute('d', d);
 }
 
 verticalSliderContainer.addEventListener('touchstart', (event) => {
@@ -132,13 +169,13 @@ verticalSliderContainer.addEventListener('touchstart', (event) => {
     verticalActive = true;
     activeTouches.vertical = touch.identifier;
     updateDebugInfo("height-debug", `Height slider active: ${activeTouches.vertical}`);
-    updateSliderFromEvent(event);
+    updateVerticalSliderFromEvent(event);
     updateDebugInfo("height-info", "Height slider touch start");
 });
-verticalSliderKnob.addEventListener('touchstart', startDrag);
-verticalSliderContainer.addEventListener('mousedown', startDrag);
+verticalSliderKnob.addEventListener('touchstart', startDragVertical);
+verticalSliderContainer.addEventListener('mousedown', startDragVertical);
 
-function startDrag(event) {
+function startDragVertical(event) {
     if (activeTouches.vertical !== null) return;
     event.preventDefault();
     verticalActive = true;
@@ -153,11 +190,44 @@ function startDrag(event) {
         activeTouches.vertical = 'mouse';
     }
     updateDebugInfo("height-debug", `Height slider active: ${activeTouches.vertical}`);
-    updateSliderFromEvent(event);
+    updateVerticalSliderFromEvent(event);
     updateDebugInfo("height-info", "Height slider touch start");
 }
 
-function updateSliderFromEvent(event) {
+pitchSliderContainer.addEventListener('touchstart', (event) => {
+    if (activeTouches.pitch !== null) return;
+    event.preventDefault();
+    const touch = event.changedTouches[0];
+    pitchActive = true;
+    activeTouches.pitch = touch.identifier;
+    updateDebugInfo("pitch-debug", `Pitch slider active: ${activeTouches.pitch}`);
+    updatePitchSliderFromEvent(event);
+    updateDebugInfo("pitch-info", "Pitch slider touch start");
+});
+pitchSliderKnob.addEventListener('touchstart', startDragPitch);
+pitchSliderContainer.addEventListener('mousedown', startDragPitch);
+
+function startDragPitch(event) {
+    if (activeTouches.pitch !== null) return;
+    event.preventDefault();
+    pitchActive = true;
+    if (event.touches) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].target === pitchSliderKnob || event.touches[i].target === pitchSliderContainer) {
+                activeTouches.pitch = event.touches[i].identifier;
+                break;
+            }
+        }
+    }
+    else {
+        activeTouches.pitch = 'mouse';
+    }
+    updateDebugInfo("pitch-debug", `Pitch slider active: ${activeTouches.pitch}`);
+    updatePitchSliderFromEvent(event);
+    updateDebugInfo("pitch-info", "Pitch slider touch start");
+}
+
+function updateVerticalSliderFromEvent(event) {
     const rect = verticalSliderContainer.getBoundingClientRect();
     let mouseX, mouseY;
 
@@ -198,17 +268,51 @@ function updateSliderFromEvent(event) {
     verticalValue = closestProgress;
     updateVerticalSliderPostion(verticalValue);
 }
+
+function updatePitchSliderFromEvent(event) {
+    const rect = pitchSliderContainer.getBoundingClientRect();
+    let mouseX, mouseY;
+
+    if (event.type == 'touchmove'){
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === activeTouches.pitch) {
+                mouseX = event.touches[i].clientX;
+                mouseY = event.touches[i].clientY;
+                break;
+            }
+        }
+    } else {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    }
+
+    if (!mouseX || !mouseY) {
+        console.warn("Mouse coordinates not found, aborting update.");
+        return;
+    }
+
+    const x = mouseX - rect.left
+    const y = mouseY - rect.top;
+    let closestProgress = 0;
+    let minDistance = Infinity;
+    for (let p = 0; p < 1.01; p+=0.01){
+        const point = applyPitchCurveTransform(p);
+        const distance = Math.sqrt(Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2));
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestProgress = p;
+        }
+    }
+    pitchValue = closestProgress;
+    updatePitchSliderPosition(pitchValue);
+    updateDebugInfo("pitch-info", `Pitch slider updated: ${pitchValue.toFixed(2)}`);
+}
 // 初始化
 window.addEventListener('load', () => {
     initVerticalSlider();
-    initTrackPath();
+    initPitchSlider();
 })
-
-
-//倾角滑块控制元素
-const pitchKnob = document.getElementById('pitch-knob');
-const pitchSlider = document.getElementById('pitch-slider');
-const fillIndicator2 = document.getElementById('fill-indicator2');
 
 // 摇杆元素
 const leftJoystickOuter = document.getElementById('left-outer');
@@ -276,111 +380,6 @@ function manageMessageQueue() {
         );
         oldestMsg?.remove();
     }
-}
-let pitchValue = 0.5;
-let pitchActive = false;
-let pitchStartY = 0;
-let pitchSliderHeight = 200;
-// 初始化倾角滑块
-function initPitchSlider() {
-    const sliderRect = pitchSlider.getBoundingClientRect();
-    pitchSliderHeight = sliderRect.height;
-    const knobHeight = pitchKnob.offsetHeight;
-    const maxY = pitchSliderHeight - knobHeight;
-    const currentY = maxY * (1 - pitchValue);
-    
-    pitchKnob.style.top = currentY + 'px';
-    fillIndicator2.style.height = (pitchValue * 100) + '%';
-    
-    updateDebugInfo("pitch-init", `Pitch initialization finished: total height=${pitchSliderHeight}px, knob height=${currentY}px`);
-}
-// 更新倾角值
-function updatePitchValue(yPos) {
-    const knobHeight = pitchKnob.offsetHeight;
-    const minY = 0;
-    const maxY = pitchSliderHeight - knobHeight;
-    
-    let constrainedY = Math.max(minY, Math.min(maxY, yPos));
-    const newValue = 1 - (constrainedY / maxY);
-    pitchValue = newValue;
-    
-    pitchKnob.style.top = constrainedY + 'px';
-    fillIndicator2.style.height = (newValue * 100) + '%';
-    
-    // 更新显示值
-    const pitchDisplay = document.getElementById('pitch-value');
-    if(pitchDisplay) {
-        pitchDisplay.textContent = pitchValue.toFixed(2);
-    }
-    
-    updateDebugInfo("pitch-info", `Pitch: ${pitchValue.toFixed(2)}, Y cooridinate: ${constrainedY.toFixed(0)}px`);
-}
-// 设置倾角滑块事件
-function setupPitchSliderEvents() {
-    // 滑块触摸开始
-    pitchKnob.addEventListener('touchstart', function(e) {
-        if (activeTouches.pitch !== null) return;
-        const touch = e.changedTouches[0];
-        pitchActive = true;
-        activeTouches.pitch = touch.identifier;
-        
-        const knobRect = pitchKnob.getBoundingClientRect();
-        pitchStartY = touch.clientY - knobRect.top;
-        
-        pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("pitch-info", "Pitch knob touch start");
-    }, { passive: false });
-    
-    // 背景触摸
-    pitchSlider.addEventListener('touchstart', function(e) {
-        if (activeTouches.pitch !== null) return;
-        const touch = e.changedTouches[0];
-        pitchActive = true;
-        activeTouches.pitch = touch.identifier;
-        
-        const sliderRect = pitchSlider.getBoundingClientRect();
-        const newY = touch.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
-        
-        updatePitchValue(newY);
-        
-        pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("pitch-info", "Pitch knob touch start");
-    }, { passive: false });
-    
-    // 鼠标事件
-    pitchKnob.addEventListener('mousedown', function(e) {
-        pitchActive = true;
-        const knobRect = pitchKnob.getBoundingClientRect();
-        pitchStartY = e.clientY - knobRect.top;
-        
-        pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("pitch-info", "Pitch knob mouse start");
-    });
-    
-    pitchSlider.addEventListener('mousedown', function(e) {
-        if (e.target === pitchSlider || e.target === fillIndicator2) {
-            pitchActive = true;
-            const sliderRect = pitchSlider.getBoundingClientRect();
-            const newY = e.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
-            
-            updatePitchValue(newY);
-            
-            pitchKnob.style.transform = 'translateX(-50%) scale(1.2)';
-            pitchSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-            
-            e.preventDefault();
-            updateDebugInfo("pitch-info", "Pitch knob mouse start");
-        }
-    });
 }
 
 // 摇杆功能 - 支持多点触控
@@ -538,18 +537,11 @@ document.addEventListener('touchmove', function(e) {
         
         // 更新高度条
         if (activeTouches.vertical === touch.identifier) {
-            updateSliderFromEvent(e);
+            updateVerticalSliderFromEvent(e);
         }
         // 更新倾角条
         if (activeTouches.pitch === touch.identifier) {
-            const sliderRect = pitchSlider.getBoundingClientRect();
-            let newY;
-            if (touch.target === pitchKnob) {
-                newY = touch.clientY - sliderRect.top - pitchStartY;
-            } else {
-                newY = touch.clientY - sliderRect.top - (pitchKnob.offsetHeight / 2);
-            }
-            updatePitchValue(newY);
+            updatePitchSliderFromEvent(e);
         }
     }
 }, { passive: false });
@@ -584,8 +576,6 @@ document.addEventListener('touchend', function(e) {
         if (activeTouches.pitch === touch.identifier) {
             pitchActive = false;
             activeTouches.pitch = null;
-            pitchKnob.style.transform = 'translateX(-50%) scale(1)';
-            pitchSlider.style.boxShadow = '';
             updateDebugInfo("pitch-info", "pitch slider touch end");
         }
     }
@@ -594,7 +584,7 @@ document.addEventListener('touchend', function(e) {
 // 鼠标移动处理
 document.addEventListener('mousemove', function(e) {
     if (verticalActive) {
-        updateSliderFromEvent(e);
+        updateVerticalSliderFromEvent(e);
     }
     
     if (activeTouches.left === 'mouse') {
@@ -613,9 +603,7 @@ document.addEventListener('mousemove', function(e) {
         e.preventDefault();
     }
     if (pitchActive) {
-        const sliderRect = pitchSlider.getBoundingClientRect();
-        const newY = e.clientY - sliderRect.top - pitchStartY;
-        updatePitchValue(newY);
+        updatePitchSliderFromEvent(e);
     }
 });
 
@@ -639,8 +627,6 @@ document.addEventListener('mouseup', function() {
     if (pitchActive) {
         pitchActive = false;
         activeTouches.pitch = null;
-        pitchKnob.style.transform = 'translateX(-50%) scale(1)';
-        pitchSlider.style.boxShadow = '';
         updateDebugInfo("pitch-info", "pitch slider mouse up");
     }
 });
@@ -682,13 +668,11 @@ function resetAllControls() {
     // 重置高度滑块
     verticalValue = 0.5;
     initVerticalSlider();
-    const maxY = verticalSliderHeight - knobHeight;
     document.getElementById('vertical-value').textContent = '0.50';
     
     // 重置倾角滑块
     pitchValue = 0.5;
-    pitchKnob.style.top = maxY * 0.5 + 'px';
-    fillIndicator2.style.height = '50%';
+    initPitchSlider();
     document.getElementById('pitch-value').textContent = '0.50';
     
     // 重置输出值
@@ -768,8 +752,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         updateDebugInfo("ros-config",'Config loading successfully: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms');
     }
     config = LoadedConfig; // 更新全局配置
-    // 初始化高度滑块
-    initPitchSlider();
     
     // 设置事件监听
     setupJoystickEvents();
