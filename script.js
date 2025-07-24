@@ -23,15 +23,11 @@ async function loadConfig() {
 }
 
 // 全局变量
-let verticalValue = 0.5;
-let verticalActive = false;
-let verticalStartY = 0;
-let verticalSliderHeight = 200;
+
 
 // 摇杆输出值
 let leftOutput = { x: 0, y: 0 };
 let rightOutput = { x: 0 };
-let heightOutput = 0.5;
 
 // 活动触摸点记录
 let activeTouches = {
@@ -42,9 +38,174 @@ let activeTouches = {
 };
 
 // 高度滑块控制元素
-const verticalKnob = document.getElementById('vertical-knob');
-const verticalSlider = document.getElementById('vertical-slider');
-const fillIndicator = document.getElementById('fill-indicator');
+const verticalSliderKnob = document.getElementById('vertical-slider-knob');
+const verticalSliderContainer = document.querySelector('.vertical-slider-container');
+let verticalValue = 0.5;
+let verticalActive = false;
+let verticalStartY = 0;
+let verticalSliderHeight = 200;
+
+function initVerticalSlider() {
+    updateVerticalSliderPostion(verticalValue);
+}
+
+// 贝塞尔曲线变换函数
+function applyVerticalCurveTransform(progress) {
+    return getPointOnBezierCurve(
+        progress,
+        verticalBezierCurvePoints.p0,
+        verticalBezierCurvePoints.p1,
+        verticalBezierCurvePoints.p2,
+        verticalBezierCurvePoints.p3
+    );
+}
+const verticalBezierCurvePoints = {
+    p0: {x: 25, y: 25},
+    p1: {x: 75, y: 35},
+    p2: {x: 180, y: 100},
+    p3: {x: 200, y: 200}
+};
+
+function getPointOnBezierCurve(percent, p0, p1, p2, p3) {
+    // 确保百分比在0-1之间
+    const t = Math.max(0, Math.min(1, percent));
+    
+    // 三次贝塞尔曲线公式
+    const x = Math.pow(1 - t, 3) * p0.x + 
+              3 * Math.pow(1 - t, 2) * t * p1.x + 
+              3 * (1 - t) * Math.pow(t, 2) * p2.x + 
+              Math.pow(t, 3) * p3.x;
+              
+    const y = Math.pow(1 - t, 3) * p0.y + 
+              3 * Math.pow(1 - t, 2) * t * p1.y + 
+              3 * (1 - t) * Math.pow(t, 2) * p2.y + 
+              Math.pow(t, 3) * p3.y;
+    
+    return { x, y };
+}
+
+function updateVerticalSliderPostion(progress) {
+    verticalValue = progress;
+    verticalutput = progress;
+    document.getElementById('vertical-value').textContent = verticalValue.toFixed(2);
+    console.info(`Updating vertical slider position: ${verticalValue}`);
+    const knobPosition = applyVerticalCurveTransform(progress);
+
+    verticalSliderKnob.style.left = `${knobPosition.x}px`;
+    verticalSliderKnob.style.top = `${knobPosition.y}px`;
+
+    updateFillPath(progress);
+}
+
+function updateFillPath(progress) {
+    const path = document.getElementById('vertical-fill-path');
+    const segments = 20;
+
+    let d = `M25, 25`;
+    for (let i = 0; i <= segments; i++) {
+        const p = Math.min(i / segments, progress);
+        const point = applyVerticalCurveTransform(p);
+        d += ` L${point.x},${point.y}`;
+    }
+
+    path.setAttribute('d', d);
+}
+
+function initTrackPath() {
+    return;// test
+    const track = document.getElementById('vertical-track-path');
+    const segments = 20;
+
+    let d = `M25, 25`;
+    for (let i = 0; i <= segments; i++) {
+        const p = Math.min(i / segments, 1);
+        const point = applyVerticalCurveTransform(p);
+        d += ` L${point.x},${point.y}`;
+    }
+    track.setAttribute('d', d);
+}
+
+verticalSliderContainer.addEventListener('touchstart', (event) => {
+    if (activeTouches.vertical !== null) return;
+    event.preventDefault();
+    const touch = event.changedTouches[0];
+    verticalActive = true;
+    activeTouches.vertical = touch.identifier;
+    updateDebugInfo("height-debug", `Height slider active: ${activeTouches.vertical}`);
+    updateSliderFromEvent(event);
+    updateDebugInfo("height-info", "Height slider touch start");
+});
+verticalSliderKnob.addEventListener('touchstart', startDrag);
+verticalSliderContainer.addEventListener('mousedown', startDrag);
+
+function startDrag(event) {
+    if (activeTouches.vertical !== null) return;
+    event.preventDefault();
+    verticalActive = true;
+    if (event.touches) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].target === verticalSliderKnob || event.touches[i].target === verticalSliderContainer) {
+                activeTouches.vertical = event.touches[i].identifier;
+                break;
+            }
+        }
+    } else {
+        activeTouches.vertical = 'mouse';
+    }
+    updateDebugInfo("height-debug", `Height slider active: ${activeTouches.vertical}`);
+    updateSliderFromEvent(event);
+    updateDebugInfo("height-info", "Height slider touch start");
+}
+
+function updateSliderFromEvent(event) {
+    const rect = verticalSliderContainer.getBoundingClientRect();
+    let mouseX, mouseY;
+
+    if (event.type == 'touchmove'){
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === activeTouches.vertical) {
+                mouseX = event.touches[i].clientX;
+                mouseY = event.touches[i].clientY;
+                break;
+            }
+        }
+    } else {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    }
+
+    if (!mouseX || !mouseY) {
+        console.warn("Mouse coordinates not found, aborting update.");
+        return;
+    }
+
+    const x = mouseX - rect.left;
+    const y = mouseY - rect.top;
+
+    let closestProgress = 0;
+    let minDistance = Infinity;
+
+    for (let p = 0; p < 1.01; p+=0.01){
+        const point = applyVerticalCurveTransform(p);
+        const distance = Math.sqrt(Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2));
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestProgress = p;
+        }
+    }
+
+    verticalValue = closestProgress;
+    updateVerticalSliderPostion(verticalValue);
+}
+// 初始化
+window.addEventListener('load', () => {
+    initVerticalSlider();
+    initTrackPath();
+})
+
+
+//倾角滑块控制元素
 const pitchKnob = document.getElementById('pitch-knob');
 const pitchSlider = document.getElementById('pitch-slider');
 const fillIndicator2 = document.getElementById('fill-indicator2');
@@ -115,123 +276,6 @@ function manageMessageQueue() {
         );
         oldestMsg?.remove();
     }
-}
-
-// 初始化高度滑块位置
-function initVerticalSlider() {
-    const sliderRect = verticalSlider.getBoundingClientRect();
-    verticalSliderHeight = sliderRect.height;
-    const knobHeight = verticalKnob.offsetHeight;
-    const maxY = verticalSliderHeight - knobHeight;
-    const currentY = maxY * (1 - verticalValue);
-    
-    verticalKnob.style.top = currentY + 'px';
-    fillIndicator.style.height = (verticalValue * 100) + '%';
-    
-    updateDebugInfo('heigh-init',`Height initialization finished: total height=${verticalSliderHeight}px, knob height=${currentY}px`);
-}
-
-// 高度条事件处理 - 支持多点触控
-function setupVerticalSliderEvents() {
-    // 滑块触摸开始
-    verticalKnob.addEventListener('touchstart', function(e) {
-        // 检查是否已有一个活动触摸点
-        if (activeTouches.vertical !== null) return;
-        
-        const touch = e.changedTouches[0];
-        verticalActive = true;
-        activeTouches.vertical = touch.identifier;
-        
-        // 记录初始触摸位置
-        const knobRect = verticalKnob.getBoundingClientRect();
-        verticalStartY = touch.clientY - knobRect.top;
-        
-        // 添加活动状态样式
-        verticalKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("height-info","Height slider touch start");
-    }, { passive: false });
-    
-    // 滑块背景触摸
-    verticalSlider.addEventListener('touchstart', function(e) {
-        if (activeTouches.vertical !== null) return;
-        
-        const touch = e.changedTouches[0];
-        verticalActive = true;
-        activeTouches.vertical = touch.identifier;
-        
-        const sliderRect = verticalSlider.getBoundingClientRect();
-        // 计算新位置
-        const newY = touch.clientY - sliderRect.top - (verticalKnob.offsetHeight / 2);
-        
-        // 更新高度值
-        updateVerticalValue(newY);
-        
-        // 添加活动状态样式
-        verticalKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("height-info","Height slider touch start");
-    }, { passive: false });
-    
-    // 滑块鼠标按下
-    verticalKnob.addEventListener('mousedown', function(e) {
-        verticalActive = true;
-        const knobRect = verticalKnob.getBoundingClientRect();
-        verticalStartY = e.clientY - knobRect.top;
-        
-        verticalKnob.style.transform = 'translateX(-50%) scale(1.2)';
-        verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-        
-        e.preventDefault();
-        updateDebugInfo("height-info","Height slider mouse start");
-    });
-    
-    verticalSlider.addEventListener('mousedown', function(e) {
-        if (e.target === verticalSlider || e.target === fillIndicator) {
-            verticalActive = true;
-            const sliderRect = verticalSlider.getBoundingClientRect();
-            const newY = e.clientY - sliderRect.top - (verticalKnob.offsetHeight / 2);
-            
-            updateVerticalValue(newY);
-            
-            verticalKnob.style.transform = 'translateX(-50%) scale(1.2)';
-            verticalSlider.style.boxShadow = '0 0 20px rgba(255, 85, 0, 0.5)';
-            
-            e.preventDefault();
-            updateDebugInfo("height-info","Height slider mouse start");
-        }
-    });
-}
-
-// 更新高度值
-function updateVerticalValue(yPos) {
-    const knobHeight = verticalKnob.offsetHeight;
-    const minY = 0;
-    const maxY = verticalSliderHeight - knobHeight;
-    
-    // 约束在有效范围内
-    let constrainedY = Math.max(minY, Math.min(maxY, yPos));
-    
-    // 计算高度值 (0-1)
-    const newValue = 1 - (constrainedY / maxY);
-    verticalValue = newValue;
-    
-    // 更新滑块位置
-    verticalKnob.style.top = constrainedY + 'px';
-    
-    // 更新填充指示器
-    fillIndicator.style.height = (newValue * 100) + '%';
-    
-    // 更新高度显示值
-    document.getElementById('vertical-value').textContent = verticalValue.toFixed(2);
-    heightOutput = verticalValue; // 更新高度输出值
-    
-    // 调试信息
-    updateDebugInfo("height-info",`Height: ${verticalValue.toFixed(2)}, Y Coordinate: ${constrainedY.toFixed(0)}px`);
 }
 let pitchValue = 0.5;
 let pitchActive = false;
@@ -364,7 +408,7 @@ function setupJoystickEvents() {
     rightJoystickOuter.addEventListener('touchstart', function(e) {
         // 检查是否已有一个活动触摸点
         if (activeTouches.right !== null) return;
-        
+
         const touch = e.changedTouches[0];
         activeTouches.right = touch.identifier;
         
@@ -494,18 +538,7 @@ document.addEventListener('touchmove', function(e) {
         
         // 更新高度条
         if (activeTouches.vertical === touch.identifier) {
-            const sliderRect = verticalSlider.getBoundingClientRect();
-            
-            // 计算新位置
-            let newY;
-            if (touch.target === verticalKnob) {
-                newY = touch.clientY - sliderRect.top - verticalStartY;
-            } else {
-                newY = touch.clientY - sliderRect.top - (verticalKnob.offsetHeight / 2);
-            }
-            
-            // 更新高度值
-            updateVerticalValue(newY);
+            updateSliderFromEvent(e);
         }
         // 更新倾角条
         if (activeTouches.pitch === touch.identifier) {
@@ -544,12 +577,9 @@ document.addEventListener('touchend', function(e) {
         if (activeTouches.vertical === touch.identifier) {
             verticalActive = false;
             activeTouches.vertical = null;
-            
-            // 移除活动状态样式
-            verticalKnob.style.transform = 'translateX(-50%) scale(1)';
-            verticalSlider.style.boxShadow = '';
             updateDebugInfo("height-info","height slider touch end");
         }
+
         // 重置倾角条
         if (activeTouches.pitch === touch.identifier) {
             pitchActive = false;
@@ -564,9 +594,7 @@ document.addEventListener('touchend', function(e) {
 // 鼠标移动处理
 document.addEventListener('mousemove', function(e) {
     if (verticalActive) {
-        const sliderRect = verticalSlider.getBoundingClientRect();
-        const newY = e.clientY - sliderRect.top - verticalStartY;
-        updateVerticalValue(newY);
+        updateSliderFromEvent(e);
     }
     
     if (activeTouches.left === 'mouse') {
@@ -595,8 +623,7 @@ document.addEventListener('mousemove', function(e) {
 document.addEventListener('mouseup', function() {
     if (verticalActive) {
         verticalActive = false;
-        verticalKnob.style.transform = 'translateX(-50%) scale(1)';
-        verticalSlider.style.boxShadow = '';
+        activeTouches.vertical = null;
         updateDebugInfo("height-info","height slider mouse up");
     }
     
@@ -611,6 +638,7 @@ document.addEventListener('mouseup', function() {
     }
     if (pitchActive) {
         pitchActive = false;
+        activeTouches.pitch = null;
         pitchKnob.style.transform = 'translateX(-50%) scale(1)';
         pitchSlider.style.boxShadow = '';
         updateDebugInfo("pitch-info", "pitch slider mouse up");
@@ -653,10 +681,8 @@ function resetAllControls() {
     
     // 重置高度滑块
     verticalValue = 0.5;
-    const knobHeight = verticalKnob.offsetHeight;
+    initVerticalSlider();
     const maxY = verticalSliderHeight - knobHeight;
-    verticalKnob.style.top = maxY * 0.5 + 'px';
-    fillIndicator.style.height = '50%';
     document.getElementById('vertical-value').textContent = '0.50';
     
     // 重置倾角滑块
@@ -666,7 +692,6 @@ function resetAllControls() {
     document.getElementById('pitch-value').textContent = '0.50';
     
     // 重置输出值
-    heightOutput = 0.5;
     leftOutput = { x: 0, y: 0 };
     rightOutput = { x: 0 };
     
@@ -703,7 +728,7 @@ function triggerJump() {
     }, intervalTime);
 }
 
-// 触发机器人起跳
+// 触发机器人Flip
 function triggerFlip() {
     if (!flipTopic || !connected) {
         updateDebugInfo("flip-error", "Not connected to ROS or flip topic not initialized");
@@ -744,11 +769,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     config = LoadedConfig; // 更新全局配置
     // 初始化高度滑块
-    initVerticalSlider();
     initPitchSlider();
     
     // 设置事件监听
-    setupVerticalSliderEvents();
     setupJoystickEvents();
     setupPitchSliderEvents();
     
@@ -882,7 +905,7 @@ function move(){
         }
     });
     const heightMsg = new ROSLIB.Message({
-        data: heightOutput // 使用高度输出值
+        data: verticalValue // 使用高度输出值
     });
     // 发布消息
     console.log(`Publishing: linear x=${twist.linear.x}, y=${twist.linear.y}, angular y=${twist.angular.y}, z=${twist.angular.z}`);

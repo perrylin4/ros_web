@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -61,10 +61,21 @@
         <!-- 高度控制竖条 - 位于中间 -->
         <div class="vertical-slider-container">
             <div class="vertical-slider-label">高度控制</div>
-            <div class="vertical-slider-background" id="vertical-slider">
-                <div class="fill-indicator" id="fill-indicator"></div>
-                <div class="vertical-slider-knob" id="vertical-knob"></div>
-            </div>
+            <svg width="300" height="500" class="slider-svg">
+                <!-- 轨道路径 -->
+                <path id="vertical-track-path" 
+                    d="M 25 25 C 75 35 180 100 200 200" stroke="#00549e" 
+                    stroke-width="30" fill="none" 
+                    stroke-linecap="round"/>
+                
+                <!-- 填充路径 -->
+                <path id="vertical-fill-path" 
+                     d="M 25 25 C 75 35 180 100 200 200" stroke="#ff7d3c" 
+                     stroke-width="30" fill="none" 
+                     stroke-linecap="round"/>
+            </svg>
+
+            <div id="vertical-slider-knob" class="vertical-slider-knob"></div>
         </div>
 
         <!-- 倾角控制竖条 - 位于右中 -->

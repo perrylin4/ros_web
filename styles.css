@@ -237,7 +237,7 @@ body {
     background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
     box-shadow: 
         0 0 25px rgba(255, 85, 0, 0.8),
-        0 0 50px rgba(极速码字255, 85, 0, 0.4);
+        0 0 50px rgba(255, 85, 0, 0.4);
     z-index: 2;
     cursor: pointer;
     transition: none;
@@ -260,7 +260,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 215px;
+    height: 255px;
     position: relative;
     flex: 0 0 100px;
     margin: 0 0 250px 0;
@@ -268,24 +268,13 @@ body {
     right: 400px;
 }
 
+
 .vertical-slider-label {
     font-size: 18px;
     margin-bottom: 8px;
     color: #ffffff;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     font-weight: 700;
-}
-
-.vertical-slider-background {
-    width: 35px;
-    height: 180px;
-    background: rgba(100, 180, 255, 0.3);
-    border-radius: 20px;
-    position: relative;
-    box-shadow: 
-        inset 0 0 15px rgba(0, 0, 0, 0.5),
-        0 5px 20px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
 }
 
 .vertical-slider-knob {
@@ -303,6 +292,12 @@ body {
         0 0 30px rgba(255, 85, 0, 0.4);
     border: 3px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.1s;
+}
+
+.vertical-slider-knob:active {
+    transform: translateX(-50%) scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 1),
+                0 0 40px rgba(255, 85, 0, 0.6);
 }
 
 /* 倾角控制竖条 - 位于中间位置 */
