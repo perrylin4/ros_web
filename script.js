@@ -659,6 +659,21 @@ let jumpInterval; // 起跳定时器
 
 let flipTopic; // 翻转话题对象
 let flipInterval; // 翻转定时器
+
+let crawTopic;
+let crawInterval;
+
+let sandpitTopic;
+let sandpitInterval;
+
+let straightupTopic;
+let straightupInterval;
+
+let stairsTopic;
+let stairsInterval;
+
+let slopeTopic;
+let sideslopeInterval;
 // 重置所有控制器
 function resetAllControls() {
     // 重置摇杆
@@ -743,6 +758,193 @@ function triggerFlip() {
     }, intervalTime);
 }
 
+// 触发机器人Craw
+function triggerCraw() {
+    updateDebugInfo("debug", "craw triggered!")
+    if (!crawTopic || !connected) {
+        updateDebugInfo("craw-error", "Not connected to ROS or craw topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(crawInterval); // 清除现有定时器
+    crawInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(crawInterval);
+            return;
+        }
+        
+        const crawMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        crawTopic.publish(crawMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("craw-publish", `publish craw command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+//触发机器人sandpit
+function triggerSandpit() {
+    if (!sandpitTopic || !connected) {
+        updateDebugInfo("sandpit-error", "Not connected to ROS or sandpit topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(sandpitInterval); // 清除现有定时器
+    sandpitInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(sandpitInterval);
+            return;
+        }
+        
+        const sandpitMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        sandpitTopic.publish(sandpitMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("sandpit-publish", `publish sandpit command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+//触发机器人straightup
+function triggerStraightup() {
+    if (!straightupTopic || !connected) {
+        updateDebugInfo("straightup-error", "Not connected to ROS or straightup topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(straightupInterval); // 清除现有定时器
+    straightupInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(straightupInterval);
+            return;
+        }
+        
+        const straightupMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        straightupTopic.publish(straightupMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("straightup-publish", `publish straightup command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+//触发机器人stairs
+function triggerStairs() {
+    if (!stairsTopic || !connected) {
+        updateDebugInfo("stairs-error", "Not connected to ROS or stairs topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(stairsInterval); // 清除现有定时器
+    stairsInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(stairsInterval);
+            return;
+        }
+        
+        const stairsMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        stairsTopic.publish(stairsMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("stairs-publish", `publish stairs command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+//触发机器人slope
+function triggerSlope() {
+    if (!slopeTopic || !connected) {
+        updateDebugInfo("slope-error", "Not connected to ROS or slope topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(slopeInterval); // 清除现有定时器
+    slopeInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(slopeInterval);
+            return;
+        }
+        
+        const slopeMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        slopeTopic.publish(slopeMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("slope-publish", `publish slope command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
+//触发机器人sideslope
+function triggerSideslope() {
+    if (!sideslopeTopic || !connected) {
+        updateDebugInfo("sideslope-error", "Not connected to ROS or sideslope topic not initialized");
+        return;
+    }
+    
+    let count = 0;
+    const maxCount = 1;
+    const intervalTime = 10; // 10ms * 10 = 100ms
+    
+    clearInterval(sideslopeInterval); // 清除现有定时器
+    sideslopeInterval = setInterval(() => {
+        if (count >= maxCount) {
+            clearInterval(sideslopeInterval);
+            return;
+        }
+        
+        const sideslopeMsg = new ROSLIB.Message({
+            data: true
+        });
+        
+        sideslopeTopic.publish(sideslopeMsg);
+        document.getElementById('message-count').textContent = 
+            parseInt(document.getElementById('message-count').textContent) + 1;
+        
+        updateDebugInfo("sideslope-publish", `publish sideslope command ${count+1}/${maxCount}`);
+        count++;
+    }, intervalTime);
+}
+
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', async () => {
     const LoadedConfig = await loadConfig();
@@ -755,7 +957,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     // 设置事件监听
     setupJoystickEvents();
-    setupPitchSliderEvents();
     
     // 按钮事件
     document.getElementById('connectBtn').addEventListener('click', function() {
@@ -804,6 +1005,24 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const flipBtn = document.getElementById('flip-btn');
     flipBtn.addEventListener('click', triggerFlip);
+
+    const crawBtn = document.getElementById('craw-btn');
+    crawBtn.addEventListener('click', triggerCraw);
+
+    const sandpitBtn = document.getElementById('sandpit-btn');
+    sandpitBtn.addEventListener('click', triggerSandpit);
+
+    const straightupBtn = document.getElementById('straightup-btn');
+    straightupBtn.addEventListener('click', triggerStraightup);
+
+    const stairsBtn = document.getElementById('stairs-btn');
+    stairsBtn.addEventListener('click', triggerStairs);
+
+    const slopeBtn = document.getElementById('slope-btn');
+    slopeBtn.addEventListener('click', triggerSlope);
+
+    const sideslopeBtn = document.getElementById('sideslope-btn');
+    sideslopeBtn.addEventListener('click', triggerSideslope);
 });
 let ros = null;
 let cmdVel = null;
@@ -840,6 +1059,36 @@ function startConnection() {
             name: '/flip',
             messageType: 'std_msgs/Bool'
         });
+        crawTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/craw',
+            messageType: 'std_msgs/Bool'
+        });
+        straightupTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/straightup',
+            messageType: 'std_msgs/Bool'
+        });
+        stairsTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/stairs',
+            messageType: 'std_msgs/Bool'
+        });
+        slopeTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/slope',
+            messageType: 'std_msgs/Bool'
+        });
+        sandpitTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/sandpit',
+            messageType: 'std_msgs/Bool'
+        });
+        sideslopeTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/sideslope',
+            messageType: 'std_msgs/Bool'
+        });
         updateDebugInfo("ros-connection",'Connected to ROS server');
         document.getElementById('connectBtn').textContent = 'Connected';
         document.getElementById('disconnectBtn').textContent = 'Disconnect';
@@ -848,6 +1097,12 @@ function startConnection() {
         connected = true;
         jumpTopic.publish(new ROSLIB.Message({ data: false })); // 初始化起跳话题
         flipTopic.publish(new ROSLIB.Message({ data: false })); // 初始化翻转话题
+        crawTopic.publish(new ROSLIB.Message({ data: false })); // 初始化匍匐话题
+        sandpitTopic.publish(new ROSLIB.Message({ data: false }));
+        straightupTopic.publish(new ROSLIB.Message({ data: false }));
+        stairsTopic.publish(new ROSLIB.Message({ data: false }));
+        slopeTopic.publish(new ROSLIB.Message({ data: false }));
+        sideslopeTopic.publish(new ROSLIB.Message({ data: false }));
     });
     ros.on('error', (error) => {
         console.error('Error connecting to ROS: ', error);

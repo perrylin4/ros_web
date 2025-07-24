@@ -3,56 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot遥控器</title>
+    <title>Robot Remote Control</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- 顶部信息栏 -->
     <div class="header">
-        <div class="logo">三指控制系统 | 多点触控修复版</div>
+        <div class="logo">MultiKey Robot Control System</div>
         
         <div class="control-container">
             <div class="status-container">
                 <div class="status-item">
                     <span class="indicator disconnected" id="ros-indicator"></span>
-                    <span id="ros-status">未连接</span>
+                    <span id="ros-status">Disconnected</span>
                 </div>
                 
                 <div class="status-item">
-                    <span class="value-label">消息:</span>
+                    <span class="value-label">Messages:</span>
                     <span id="message-count">0</span>
                 </div>
             </div>
             
             <div>
-                <button id="connectBtn" class="btn">连接 ROS</button>
-                <button id="disconnectBtn" class="btn btn-disconnect">断开连接</button>
+                <button id="connectBtn" class="btn">Connect to ROS</button>
+                <button id="disconnectBtn" class="btn btn-disconnect">Disconnect</button>
             </div>
         </div>
     </div>
     
     <!-- 竖屏警告 -->
     <div class="orientation-warning">
-        <h2>请切换到横屏模式</h2>
-        <p>此应用需要横屏以获得最佳体验</p>
+        <h2>Please switch to landscape mode</h2>
+        <p>This application needs it for better performance</p>
     </div>
     
     <!-- 按钮行 - 6个按钮 -->
     <div class="button-row">
         <button class="action-btn" id="jump-btn">jump</button>
         <button class="action-btn" id="reset-all">reset</button>
-        <button class="action-btn">???</button>
-        <button class="action-btn">???</button>
-        <button class="action-btn">???</button>
         <button class="action-btn" id="flip-btn">flip</button>
     </div>
+
+    <button class="craw-btn" id="craw-btn">Craw</button>
+    <button class="sandpit-btn" id="sandpit-btn">Sandpit</button>
+    <button class="straightup-btn" id="straightup-btn">StraightUp</button>
+    <button class="stairs-btn" id="stairs-btn">Stairs</button>
+    <button class="slope-btn" id="slope-btn">Slope</button>
+    <button class="sideslope-btn" id="sideslope-btn">Sideslope</button>
     
     
     <!-- 控制区域 -->
     <div class="controls-wrapper">
         <!-- 左侧摇杆 - 移动控制 -->
         <div class="joystick-container" style="order: 0;">
-            <div class="joystick-label">移动控制</div>
+            <div class="joystick-label">Movement</div>
             <div class="joystick-outer" id="left-outer">
                 <div class="joystick-inner" id="left-inner"></div>
             </div>
@@ -60,7 +64,7 @@
         
         <!-- 高度控制竖条 - 位于中间 -->
         <div class="vertical-slider-container">
-            <div class="vertical-slider-label">高度控制</div>
+            <div class="vertical-slider-label">Height</div>
             <svg width="250" height="255" class="slider-svg">
                 <!-- 轨道路径 -->
                 <path id="vertical-track-path" 
@@ -80,7 +84,7 @@
 
         <!-- 倾角控制竖条 - 位于右中 -->
         <div class="pitch-slider-container">
-            <div class="pitch-slider-label">倾角控制</div>
+            <div class="pitch-slider-label">Pitch</div>
             <svg width="250" height="255" class="slider-svg">
                 <!-- 轨道路径 -->
                 <path id="pitch-track-path" 
@@ -102,7 +106,7 @@
         
         <!-- 右侧摇杆 - 旋转控制 -->
         <div class="joystick-container" style="order: 2;">
-            <div class="joystick-label">旋转控制</div>
+            <div class="joystick-label">Spin</div>
             <div class="joystick-outer" id="right-outer">
                 <div class="joystick-inner" id="right-inner"></div>
             </div>
@@ -111,26 +115,26 @@
     
     <!-- 坐标显示面板 -->
     <div class="coords-display">
-        <div class="coords-title">控制参数输出</div>
+        <div class="coords-title">Control Data</div>
         <div class="coords-values">
             <div class="coord-item">
-                <div class="coord-label">前进速度</div>
+                <div class="coord-label">Forward Speed</div>
                 <div id="left-x-output" class="coord-value">0.00</div>
             </div>
             <div class="coord-item">
-                <div class="coord-label">横向速度</div>
+                <div class="coord-label">Horizontal Speed</div>
                 <div id="left-y-output" class="coord-value">0.00</div>
             </div>
             <div class="coord-item">
-                <div class="coord-label">旋转速度</div>
+                <div class="coord-label">Spinning Speed</div>
                 <div id="right-x-output" class="coord-value">0.00</div>
             </div>
             <div class="coord-item">
-                <div class="coord-label">高度控制</div>
+                <div class="coord-label">Height</div>
                 <div id="vertical-value" class="coord-value">0.50</div>
             </div>
             <div class="coord-item">
-                <div class="coord-label">倾角控制</div>
+                <div class="coord-label">Pitch</div>
                 <div id="pitch-value" class="coord-value">0.50</div>
             </div>
         </div>

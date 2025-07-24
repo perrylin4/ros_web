@@ -457,6 +457,120 @@ body {
     justify-content: center;
 }
 
+.craw-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #4CAF50, #2E7D32);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 12%;
+    left: 20%;
+    z-index: 110;
+}
+
+.sandpit-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #ff5722, #d32f2f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 12%;
+    right: 20%;
+    z-index: 110;
+}
+
+.straightup-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #4CAF50, #2E7D32);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 20%;
+    left: 20%;
+    z-index: 110;
+}
+
+.stairs-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #4CAF50, #2E7D32);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 28%;
+    left: 20%;
+    z-index: 110;
+}
+
+.slope-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #ff5722, #d32f2f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 20%;
+    right: 20%;
+    z-index: 110;
+}
+
+.sideslope-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(to right, #ff5722, #d32f2f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+    position: absolute;
+    bottom: 28%;
+    right: 20%;
+    z-index: 110;
+}
+
 @media only screen and (orientation: portrait) {
     .orientation-warning {
         display: flex;
