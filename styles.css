@@ -412,7 +412,7 @@ body {
     position: fixed; /* 替换原有定位 */
     top: 80px; /* 下移避开顶部状态栏 */
     right: 38%; /* 右侧定位 */
-    width: 300px; /* 限制宽度 */
+    width: 390px; /* 限制宽度 */
     max-height: 50vh; /* 限制高度 */
     overflow-y: auto; /* 支持滚动 */
     background: rgba(0, 0, 0, 0.35); /* 深色半透明背景 */
