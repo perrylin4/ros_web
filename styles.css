@@ -3,7 +3,6 @@
     margin: 0;
     padding: 0;
     touch-action: none;
-    user-select: none;
 }
 
 body {
@@ -347,7 +346,7 @@ body {
     background: rgba(0, 0, 0, 0.7);
     border-radius: 16px;
     padding: 15px 30px;
-    width: 320px;
+    width: 350px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.15);
     text-align: center;

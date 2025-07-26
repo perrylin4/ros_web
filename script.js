@@ -17,6 +17,8 @@ async function loadConfig() {
             rosbridge_ip: "192.168.31.248",
             rosbridge_port: "9090",
             http_port: 8080,
+            publish_interval: 10,
+            dead_zone: 0.2,
             _isFallBack: true
         };
     }
@@ -488,22 +490,40 @@ function updateJoystickPosition(type, dx, dy) {
     
     // 存储输出值
     if (type === 'left') {
-        leftOutput.x = newDx / maxDistance;
-        leftOutput.y = newDy / maxDistance;
-        if (leftOutput.y * leftOutput.y + leftOutput.x * leftOutput.x < 0.1) {
+        leftOutput.x = -newDy / maxDistance;
+        leftOutput.y = newDx / maxDistance;
+        updateDebugInfo("left-debug", "Left joystick original X: " + leftOutput.x.toFixed(2) + ", Y: " + leftOutput.y.toFixed(2));
+        if (leftOutput.y * leftOutput.y + leftOutput.x * leftOutput.x < config.dead_zone * config.dead_zone) {
             leftOutput = { x: 0, y: 0 }; // 重置为0
         }
-        document.getElementById('left-x-output').textContent = (-leftOutput.y).toFixed(2);
-        document.getElementById('left-y-output').textContent = leftOutput.x.toFixed(2);
-        updateDebugInfo("left-info",`Left joystick: X:${-leftOutput.y.toFixed(2)}, Y:${leftOutput.x.toFixed(2)}`);
+        else {
+            // 应用死区处理
+            const alpha = Math.atan2(leftOutput.y, leftOutput.x);
+            updateDebugInfo("left-debug-angle", `Left joystick angle: ${alpha.toFixed(2)} radians`);
+            leftOutput.y = (leftOutput.y - config.dead_zone * Math.sin(alpha)) / (1 - config.dead_zone) * Math.abs(Math.sin(alpha));
+            leftOutput.x = (leftOutput.x - config.dead_zone * Math.cos(alpha)) / (1 - config.dead_zone) * Math.abs(Math.cos(alpha));
+        }
+        leftOutput.x = leftOutput.x > 0 ? Math.sqrt(leftOutput.x) : -Math.sqrt(-leftOutput.x);
+        leftOutput.y = leftOutput.y > 0 ? Math.sqrt(leftOutput.y) : -Math.sqrt(-leftOutput.y);
+        document.getElementById('left-x-output').textContent = leftOutput.x.toFixed(2);
+        document.getElementById('left-y-output').textContent = leftOutput.y.toFixed(2);
+        updateDebugInfo("left-info",`Left joystick: X:${leftOutput.x.toFixed(2)}, Y:${leftOutput.y.toFixed(2)}`);
     } else {
         rightOutput.x = newDx / maxDistance;
-        if (rightOutput.x * rightOutput.x < 0.1) {
+        updateDebugInfo("right-debug-angle", "Right joystick original X: " + rightOutput.x.toFixed(2));
+        if (rightOutput.x * rightOutput.x < config.dead_zone * config.dead_zone) {
             rightOutput = { x: 0 }; // 重置为0
+        }
+        else {
+            rightOutput.x = (rightOutput.x - (rightOutput.x > 0 ? config.dead_zone : -config.dead_zone)) / (1 - config.dead_zone);
         }
         document.getElementById('right-x-output').textContent = rightOutput.x.toFixed(2);
         updateDebugInfo("right-info",`Right joystick: X:${rightOutput.x.toFixed(2)}`);
     }
+}
+
+function inQuad(progress){
+    return progress * progress;
 }
 
 // 触摸移动处理 - 多点触控支持
@@ -648,6 +668,7 @@ let config = {
     rosbridge_port: "9090",
     http_port: 8080,
     publish_interval: 10,
+    dead_zone: 0.2, // 死区配置
     _isFallBack: false,
 }
 let buttonTopic;
@@ -705,9 +726,9 @@ function triggerButton(buttonName) {
 window.addEventListener('DOMContentLoaded', async () => {
     const LoadedConfig = await loadConfig();
     if (LoadedConfig._isFallBack) {
-        updateDebugInfo("ros-config",'Using default config: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms');
+        updateDebugInfo("ros-config",'Using default config: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port: ' + config.http_port + ', publish frequency: ' + config.publish_interval + 'ms , dead zone size: ' + config.dead_zone);
     } else {
-        updateDebugInfo("ros-config",'Config loading successfully: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms');
+        updateDebugInfo("ros-config",'Config loading successfully: ROS ' + config.rosbridge_ip + ':' + config.rosbridge_port + ', HTTP port ' + config.http_port + ', publish frequency ' + config.publish_interval + 'ms , dead zone size: ' + config.dead_zone);
     }
     config = LoadedConfig; // 更新全局配置
     
@@ -845,8 +866,8 @@ function move(){
     }
     const twist = new ROSLIB.Message({
         linear: {
-            x: -leftOutput.y,
-            y: leftOutput.x,
+            x: leftOutput.x,
+            y: leftOutput.y,
             z: 0
         },
         angular: {
