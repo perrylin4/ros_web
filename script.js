@@ -82,16 +82,16 @@ function applyPitchCurveTransform(progress) {
     );
 }
 const verticalBezierCurvePoints = {
-    p0: {x: 25, y: 25},
-    p1: {x: 75, y: 35},
-    p2: {x: 180, y: 100},
-    p3: {x: 200, y: 200}
+    p0: {x: 200, y: 200},
+    p1: {x: 180, y: 100},
+    p2: {x: 75, y: 35},
+    p3: {x: 25, y: 25}
 };
 const pitchBezierCurvePoints = {
-    p0: {x: 230, y: 25},
-    p1: {x: 180, y: 35},
-    p2: {x: 75, y: 100},
-    p3: {x: 55, y: 200}
+    p0: {x: 55, y: 200},
+    p1: {x: 75, y: 100},
+    p2: {x: 180, y: 35},
+    p3: {x: 230, y: 25}
 }
 
 function getPointOnBezierCurve(percent, p0, p1, p2, p3) {
@@ -140,7 +140,7 @@ function updateVerticalFillPath(progress) {
     const path = document.getElementById('vertical-fill-path');
     const segments = 20;
 
-    let d = `M25, 25`;
+    let d = `M200, 200`;
     for (let i = 0; i <= segments; i++) {
         const p = Math.min(i / segments, progress);
         const point = applyVerticalCurveTransform(p);
@@ -154,7 +154,7 @@ function updatePitchFillPath(progress) {
     const path = document.getElementById('pitch-fill-path');
     const segments = 20;
 
-    let d = `M230, 25`;
+    let d = `M55, 200`;
     for (let i = 0; i <= segments; i++) {
         const p = Math.min(i / segments, progress);
         const point = applyPitchCurveTransform(p);
