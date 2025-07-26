@@ -265,6 +265,7 @@ function updateVerticalSliderFromEvent(event) {
 
     verticalValue = closestProgress;
     updateVerticalSliderPostion(verticalValue);
+    updateDebugInfo("height-info", `Height slider updated: ${verticalValue.toFixed(2)}`);
 }
 
 function updatePitchSliderFromEvent(event) {
@@ -492,14 +493,12 @@ function updateJoystickPosition(type, dx, dy) {
     if (type === 'left') {
         leftOutput.x = -newDy / maxDistance;
         leftOutput.y = newDx / maxDistance;
-        updateDebugInfo("left-debug", "Left joystick original X: " + leftOutput.x.toFixed(2) + ", Y: " + leftOutput.y.toFixed(2));
         if (leftOutput.y * leftOutput.y + leftOutput.x * leftOutput.x < config.dead_zone * config.dead_zone) {
             leftOutput = { x: 0, y: 0 }; // 重置为0
         }
         else {
             // 应用死区处理
             const alpha = Math.atan2(leftOutput.y, leftOutput.x);
-            updateDebugInfo("left-debug-angle", `Left joystick angle: ${alpha.toFixed(2)} radians`);
             leftOutput.y = (leftOutput.y - config.dead_zone * Math.sin(alpha)) / (1 - config.dead_zone) * Math.abs(Math.sin(alpha));
             leftOutput.x = (leftOutput.x - config.dead_zone * Math.cos(alpha)) / (1 - config.dead_zone) * Math.abs(Math.cos(alpha));
         }
@@ -510,7 +509,6 @@ function updateJoystickPosition(type, dx, dy) {
         updateDebugInfo("left-info",`Left joystick: X:${leftOutput.x.toFixed(2)}, Y:${leftOutput.y.toFixed(2)}`);
     } else {
         rightOutput.x = newDx / maxDistance;
-        updateDebugInfo("right-debug-angle", "Right joystick original X: " + rightOutput.x.toFixed(2));
         if (rightOutput.x * rightOutput.x < config.dead_zone * config.dead_zone) {
             rightOutput = { x: 0 }; // 重置为0
         }
