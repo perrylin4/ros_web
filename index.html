@@ -82,6 +82,66 @@
             <div id="vertical-slider-knob" class="vertical-slider-knob"></div>
         </div>
 
+        <!-- 步态最小周期 -->
+        <div class="gait-period-container">
+            <div class="gait-period-label">Gait Period</div>
+            <svg width="100" height="250" class="slider-svg">
+                <!-- 轨道路径 -->
+                <path id="gait-period-track-path"
+                    d="M 50 180 L 50 20" stroke="#00549e"
+                    stroke-width="30" fill="none"
+                    stroke-linecap="round"/>
+                
+                <!-- 填充路径 -->
+                <path id="gait-period-fill-path"
+                     d="M 50 180 L 50 100" stroke="#ff7d3c" 
+                     stroke-width="30" fill="none" 
+                     stroke-linecap="round"/>
+            </svg>
+
+            <div id="gait-period-knob" class="gait-period-knob"></div>
+        </div>
+
+        <!-- 摆动高度 -->
+        <div class="z-swing-container">
+            <div class="z-swing-label">Z-Swing</div>
+            <svg width="350" height="100" class="slider-svg">
+                <!-- 轨道路径 -->
+                <path id="z-swing-track-path"
+                    d="M 20 50 L 320 50" stroke="#00549e"
+                    stroke-width="30" fill="none"
+                    stroke-linecap="round"/>
+                
+                <!-- 填充路径 -->
+                <path id="z-swing-fill-path"
+                     d="M 20 50 L 170 50" stroke="#ff7d3c" 
+                     stroke-width="30" fill="none" 
+                     stroke-linecap="round"/>
+            </svg>
+
+            <div id="z-swing-knob" class="z-swing-knob"></div>
+        </div>
+
+        <!-- 步长 -->
+        <div class="gait-length-container">
+            <div class="gait-length-label">Gait Length</div>
+            <svg width="120" height="200" class="slider-svg">
+                <!-- 轨道路径 -->
+                <path id="gait-length-track-path" 
+                    d="M 50 180 L 50 20" stroke="#00549e"
+                    stroke-width="30" fill="none"
+                    stroke-linecap="round"/>
+                
+                <!-- 填充路径 -->
+                <path id="gait-length-fill-path" 
+                     d="M 50 180 L 50 100" stroke="#ff7d3c" 
+                     stroke-width="30" fill="none" 
+                     stroke-linecap="round"/>
+            </svg>
+
+            <div id="gait-length-knob" class="gait-length-knob"></div>
+        </div>
+
         <!-- 倾角控制竖条 - 位于右中 -->
         <div class="pitch-slider-container">
             <div class="pitch-slider-label">Pitch</div>
@@ -101,8 +161,6 @@
 
             <div id="pitch-slider-knob" class="pitch-slider-knob"></div>
         </div>
-
-        <!-- 倾角控制竖条 - 位于 -->
         
         <!-- 右侧摇杆 - 旋转控制 -->
         <div class="joystick-container" style="order: 2;">
@@ -136,6 +194,18 @@
             <div class="coord-item">
                 <div class="coord-label">Pitch</div>
                 <div id="pitch-value" class="coord-value">0.50</div>
+            </div>
+            <div class="coord-item">
+                <div class="coord-label">Gait Period</div>
+                <div id="gait-period-value" class="coord-value">0.00</div>
+            </div>
+            <div class="coord-item">
+                <div class="coord-label">Gait Length</div>
+                <div id="gait-length-value" class="coord-value">0.00</div>
+            </div>
+            <div class="coord-item">
+                <div class="coord-label">Z-Swing</div>
+                <div id="z-swing-value" class="coord-value">0.00</div>
             </div>
         </div>
     </div>

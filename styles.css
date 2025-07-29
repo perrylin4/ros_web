@@ -168,22 +168,34 @@ body {
 /* 摇杆容器 */
 .joystick-container {
     height: 400px;
-    justify-content: flex-end;
-    margin-top: auto;
+    width: 400px;
     display: flex;
+    position: relative;
     flex-direction: column;
-    align-items: center;
-    flex: 2;
+    flex: 0 0 200px;
+    margin: 0 0 -10% 0;
 }
 
 .joystick-container[style*="order: 0"] {
-    align-self: flex-start;
-    margin-left: -200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 400px;
+    position: relative;
+    flex: 0 0 100px;
+    margin: 0 0 -160px 0;
+    left: 2%;
 }
 
 .joystick-container[style*="order: 2"] {
-    align-self: flex-end;
-    margin-right: -200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 400px;
+    position: relative;
+    flex: 0 0 100px;
+    margin: 0 0 -160px 0;
+    right: 16%;
 }
 
 .joystick-label {
@@ -264,7 +276,7 @@ body {
     flex: 0 0 100px;
     margin: 0 0 250px 0;
     order: 0;
-    right: 400px;
+    right: 180px;
 }
 
 
@@ -309,7 +321,7 @@ body {
     flex: 0 0 100px;
     margin: 0 0 250px 0px;
     order: 2;
-    left: 400px;
+    left: -20px;
 }
 
 .pitch-slider-label {
@@ -335,6 +347,131 @@ body {
         0 0 30px rgba(255, 85, 0, 0.4);
     border: 3px solid rgba(255, 255, 255, 0.2);
     transition: none !important;
+}
+
+.pitch-slider-knob:active {
+    transform: translateX(-50%) scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 1),
+                0 0 40px rgba(255, 85, 0, 0.6);
+}
+
+.gait-period-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 230px;
+    position: relative;
+    flex: 0 0 100px;
+    margin: 0 0 0px 0px;
+    order: 0;
+    right: 18%;
+}
+.gait-period-label {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    font-weight: 700;
+}
+.gait-period-knob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
+    position: absolute;
+    top: 100px;
+    left: 25px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 
+        0 0 15px rgba(255, 85, 0, 0.8),
+        0 0 30px rgba(255, 85, 0, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: none !important;
+}
+.gait-period-knob:active {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 1),
+                0 0 40px rgba(255, 85, 0, 0.6);
+}
+
+.gait-length-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 230px;
+    position: relative;
+    flex: 0 0 100px;
+    margin: 0 0 0px 0px;
+    order: 2;
+    left: 5%;
+}
+.gait-length-label {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    font-weight: 700;
+}
+.gait-length-knob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
+    position: absolute;
+    left: 25px;
+    top: 100px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 
+        0 0 15px rgba(255, 85, 0, 0.8),
+        0 0 30px rgba(255, 85, 0, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: none !important;
+}
+.gait-length-knob:active {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 1),
+                0 0 40px rgba(255, 85, 0, 0.6);
+}
+.z-swing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100px;
+    position: relative;
+    flex: 0 0 100px;
+    margin: 0 0 350px 0px;
+    order: 1;
+    right: 6%;
+}
+.z-swing-label {
+    font-size: 18px;
+    margin-bottom: 0px;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    font-weight: 700;
+}
+.z-swing-knob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
+    position: absolute;
+    left: 150px;
+    top: 46px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 
+        0 0 15px rgba(255, 85, 0, 0.8),
+        0 0 30px rgba(255, 85, 0, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: none !important;
+}
+.z-swing-knob:active {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 1),
+                0 0 40px rgba(255, 85, 0, 0.6);
 }
 
 /* 坐标显示面板 */
@@ -470,8 +607,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 12%;
-    left: 20%;
+    bottom: 15%;
+    left: 25%;
     z-index: 110;
 }
 
@@ -489,8 +626,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 12%;
-    right: 20%;
+    bottom: 15%;
+    right: 25%;
     z-index: 110;
 }
 
@@ -508,8 +645,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 20%;
-    left: 20%;
+    bottom: 23%;
+    left: 25%;
     z-index: 110;
 }
 
@@ -527,8 +664,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 28%;
-    left: 20%;
+    bottom: 31%;
+    left: 25%;
     z-index: 110;
 }
 
@@ -546,8 +683,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 20%;
-    right: 20%;
+    bottom: 23%;
+    right: 25%;
     z-index: 110;
 }
 
@@ -565,8 +702,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 28%;
-    right: 20%;
+    bottom: 31%;
+    right: 25%;
     z-index: 110;
 }
 

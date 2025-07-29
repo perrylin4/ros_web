@@ -36,7 +36,10 @@ let activeTouches = {
     left: null,
     vertical: null,
     right: null,
-    pitch: null
+    pitch: null,
+    gaitPeriod: null,
+    gaitLength: null,
+    ZSwing: null
 };
 
 // 高度滑块控制元素
@@ -264,6 +267,7 @@ function updateVerticalSliderFromEvent(event) {
     }
 
     verticalValue = closestProgress;
+    onParamsChanged();
     updateVerticalSliderPostion(verticalValue);
     updateDebugInfo("height-info", `Height slider updated: ${verticalValue.toFixed(2)}`);
 }
@@ -304,13 +308,249 @@ function updatePitchSliderFromEvent(event) {
         }
     }
     pitchValue = closestProgress;
+    onParamsChanged();
     updatePitchSliderPosition(pitchValue);
     updateDebugInfo("pitch-info", `Pitch slider updated: ${pitchValue.toFixed(2)}`);
 }
+
+const gaitPeriodContainer = document.querySelector('.gait-period-container');
+const gaitPeriodKnob = document.getElementById('gait-period-knob');
+let gaitPeriodValue = 0;
+let gaitPeriodActive = false;
+const gaitPeriodStartY = 180;
+let gaitPeriodSliderHeight = 160;
+function initGaitPeriodSlider() {
+    updateGaitPeriodSliderPosition(gaitPeriodValue);
+}
+
+function updateGaitPeriodSliderPosition(progress) {
+    gaitPeriodValue = progress;
+    document.getElementById('gait-period-value').textContent = gaitPeriodValue.toFixed(2);
+    console.info(`Updating gait period slider position: ${gaitPeriodValue}`);
+    const knobPosition = gaitPeriodStartY - progress * gaitPeriodSliderHeight;
+
+    gaitPeriodKnob.style.top = `${knobPosition}px`;
+
+    updateGaitPeriodFillPath(progress);
+}
+function updateGaitPeriodFillPath(progress) {
+    const path = document.getElementById('gait-period-fill-path');
+    const segments = 20;
+
+    let d = `M 50, ${gaitPeriodStartY}`;
+    for (let i = 0; i <= segments; i++) {
+        const p = Math.min(i / segments, progress);
+        const y = gaitPeriodStartY - p * gaitPeriodSliderHeight;
+        d += ` L${50},${y}`;
+    }
+
+    path.setAttribute('d', d);
+}
+
+gaitPeriodContainer.addEventListener('touchstart', startDragGaitPeriod);
+gaitPeriodContainer.addEventListener('mousedown', startDragGaitPeriod);
+function startDragGaitPeriod(event) {
+    if (activeTouches.gaitPeriod != null) return;
+    event.preventDefault();
+
+    if (event.touches) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].target === gaitPeriodKnob || event.touches[i].target === gaitPeriodContainer) {
+                activeTouches.gaitPeriod = event.touches[i].identifier;
+                break;
+            }
+        }
+    } else {
+        gaitPeriodActive = true;
+    }
+    updateGaitPeriodSliderFromEvent(event);
+}
+function updateGaitPeriodSliderFromEvent(event) {
+    const rect = gaitPeriodContainer.getBoundingClientRect();
+    let mouseY;
+    if (event.type == 'touchmove') {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === activeTouches.gaitPeriod) {
+                mouseY = event.touches[i].clientY;
+                break;
+            }
+        }
+    }
+    else {
+        mouseY = event.clientY - 25;
+    }
+    if (!mouseY) {
+        console.warn("Mouse Y coordinate not found, aborting update.");
+        return;
+    }
+    const y = mouseY - rect.top;
+    const progress = Math.max(0, Math.min(1, (gaitPeriodStartY - y) / gaitPeriodSliderHeight));
+    gaitPeriodValue = progress;
+    onParamsChanged();
+    updateGaitPeriodSliderPosition(gaitPeriodValue);
+    updateDebugInfo("gait-period-info", `Gait period slider updated: ${gaitPeriodValue.toFixed(2)}`);
+}
+
+const gaitLengthContainer = document.querySelector('.gait-length-container');
+const gaitLengthKnob = document.getElementById('gait-length-knob');
+let gaitLengthValue = 0;
+let gaitLengthActive = false;
+const gaitLengthStartY = 180;
+let gaitLengthSliderHeight = 160;
+function initGaitLengthSlider() {
+    updateGaitLengthSliderPosition(gaitLengthValue);
+}
+
+function updateGaitLengthSliderPosition(progress) {
+    gaitLengthValue = progress;
+    document.getElementById('gait-length-value').textContent = gaitLengthValue.toFixed(2);
+    console.info(`Updating gait length slider position: ${gaitLengthValue}`);
+    const knobPosition = gaitLengthStartY - progress * gaitLengthSliderHeight;
+
+    gaitLengthKnob.style.top = `${knobPosition}px`;
+
+    updateGaitLengthFillPath(progress);
+}
+function updateGaitLengthFillPath(progress) {
+    const path = document.getElementById('gait-length-fill-path');
+    const segments = 20;
+
+    let d = `M 50, ${gaitLengthStartY}`;
+    for (let i = 0; i <= segments; i++) {
+        const p = Math.min(i / segments, progress);
+        const y = gaitLengthStartY - p * gaitLengthSliderHeight;
+        d += ` L${50},${y}`;
+    }
+
+    path.setAttribute('d', d);
+}
+gaitLengthContainer.addEventListener('touchstart', startDragGaitLength);
+gaitLengthContainer.addEventListener('mousedown', startDragGaitLength);
+function startDragGaitLength(event) {
+    if (activeTouches.gaitLength != null) return;
+    event.preventDefault();
+
+    if (event.touches) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].target === gaitLengthKnob || event.touches[i].target === gaitLengthContainer) {
+                activeTouches.gaitLength = event.touches[i].identifier;
+                break;
+            }
+        }
+    } else {
+        gaitLengthActive = true;
+    }
+    updateGaitLengthSliderFromEvent(event);
+}
+function updateGaitLengthSliderFromEvent(event) {
+    const rect = gaitLengthContainer.getBoundingClientRect();
+    let mouseY;
+    if (event.type == 'touchmove') {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === activeTouches.gaitLength) {
+                mouseY = event.touches[i].clientY;
+                break;
+            }
+        }
+    }
+    else {
+        mouseY = event.clientY - 25;
+    }
+    if (!mouseY) {
+        console.warn("Mouse Y coordinate not found, aborting update.");
+        return;
+    }
+    const y = mouseY - rect.top;
+    const progress = Math.max(0, Math.min(1, (gaitLengthStartY - y) / gaitLengthSliderHeight));
+    gaitLengthValue = progress;
+    onParamsChanged();
+    updateGaitLengthSliderPosition(gaitLengthValue);
+    updateDebugInfo("gait-length-info", `Gait length slider updated: ${gaitLengthValue.toFixed(2)}`);
+}
+
+const zSwingContainer = document.querySelector('.z-swing-container');
+const zSwingKnob = document.getElementById('z-swing-knob');
+let zSwingValue = 0;
+let zSwingActive = false;
+const zSwingStartX = 20;
+let zSwingSliderWidth = 300;
+function initZSwingSlider() {
+    updateZSwingSliderPosition(zSwingValue);
+}
+function updateZSwingSliderPosition(progress) {
+    zSwingValue = progress;
+    document.getElementById('z-swing-value').textContent = zSwingValue.toFixed(2);
+    console.info(`Updating Z-Swing slider position: ${zSwingValue}`);
+    const knobPosition = progress * zSwingSliderWidth;
+
+    zSwingKnob.style.left = `${knobPosition}px`;
+
+    updateZSwingFillPath(progress);
+}
+function updateZSwingFillPath(progress) {
+    const path = document.getElementById('z-swing-fill-path');
+    const segments = 40;
+
+    let d = `M ${zSwingStartX}, 50`;
+    for (let i = 0; i <= segments; i++) {
+        const p = Math.min(i / segments, progress);
+        const x = zSwingStartX + p * zSwingSliderWidth;
+        d += ` L${x},50`;
+    }
+
+    path.setAttribute('d', d);
+}
+
+zSwingContainer.addEventListener('touchstart', startDragZSwing);
+zSwingContainer.addEventListener('mousedown', startDragZSwing);
+function startDragZSwing(event) {
+    if (activeTouches.ZSwing != null) return;
+    event.preventDefault();
+
+    if (event.touches) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].target === zSwingKnob || event.touches[i].target === zSwingContainer) {
+                activeTouches.ZSwing = event.touches[i].identifier;
+                break;
+            }
+        }
+    } else {
+        zSwingActive = true;
+    }
+    updateZSwingSliderFromEvent(event);
+}
+function updateZSwingSliderFromEvent(event) {
+    const rect = zSwingContainer.getBoundingClientRect();
+    let mouseX;
+    if (event.type == 'touchmove') {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === activeTouches.ZSwing) {
+                mouseX = event.touches[i].clientX;
+                break;
+            }
+        }
+    } else {
+        mouseX = event.clientX;
+    }
+    if (!mouseX) {
+        console.warn("Mouse X coordinate not found, aborting update.");
+        return;
+    }
+    const x = mouseX - rect.left;
+    const progress = Math.max(0, Math.min(1, (x - zSwingStartX) / zSwingSliderWidth));
+    zSwingValue = progress;
+    onParamsChanged();
+    updateZSwingSliderPosition(zSwingValue);
+    updateDebugInfo("z-swing-info", `Z-Swing slider updated: ${zSwingValue.toFixed(2)}`);
+}
+
 // 初始化
 window.addEventListener('load', () => {
     initVerticalSlider();
     initPitchSlider();
+    initGaitPeriodSlider();
+    initGaitLengthSlider();
+    initZSwingSlider();
 })
 
 // 摇杆元素
@@ -320,6 +560,14 @@ const rightJoystickOuter = document.getElementById('right-outer');
 const rightJoystickInner = document.getElementById('right-inner');
 // 按钮元素
 const resetButton = document.getElementById('reset-all');
+const jumpButton = document.getElementById('jump-btn');
+const flipButton = document.getElementById('flip-btn');
+const crawButton = document.getElementById('craw-btn');
+const sandpitButton = document.getElementById('sandpit-btn');
+const straightupButton = document.getElementById('straightup-btn');
+const stairsButton = document.getElementById('stairs-btn');
+const slopeButton = document.getElementById('slope-btn');
+const sideslopeButton = document.getElementById('sideslope-btn');
 
 // 新版更新调试信息函数
 // 在全局作用域定义消息管理对象
@@ -524,6 +772,58 @@ function inQuad(progress){
     return progress * progress;
 }
 
+document.addEventListener('touchstart', function(e) {
+    for (let i = 0; i < e.touches.length; i++) {
+        const touch = e.touches[i];
+
+        if (touch.target === resetButton) {
+            resetButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("reset-button", "Reset button touched");
+        }
+        if (touch.target === jumpButton) {
+            jumpButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("jump-button", "Jump button touched");
+        }
+        if (touch.target === flipButton) {
+            flipButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("flip-button", "Flip button touched");
+        }
+        if (touch.target === stairsButton) {
+            stairsButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("stairs-button", "Stairs button touched");
+        }
+        if (touch.target === slopeButton) {
+            slopeButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("slope-button", "Slope button touched");
+        }
+        if (touch.target === sideslopeButton) {
+            sideslopeButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("sideslope-button", "Side Slope button touched");
+        }
+        if (touch.target === crawButton) {
+            crawButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("craw-button", "Craw button touched");
+        }
+        if (touch.target === sandpitButton) {
+            sandpitButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("sandpit-button", "Sandpit button touched");
+        }
+        if (touch.target === straightupButton) {
+            straightupButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("straightup-button", "Straight Up button touched");
+        }
+    }
+})
+
 // 触摸移动处理 - 多点触控支持
 document.addEventListener('touchmove', function(e) {
     e.preventDefault();
@@ -556,6 +856,19 @@ document.addEventListener('touchmove', function(e) {
         // 更新倾角条
         if (activeTouches.pitch === touch.identifier) {
             updatePitchSliderFromEvent(e);
+        }
+
+        if (activeTouches.gaitLength === touch.identifier) {
+            updateGaitLengthSliderFromEvent(e);
+        }
+
+        if (activeTouches.gaitPeriod === touch.identifier) {
+            updateGaitPeriodSliderFromEvent(e);
+        }
+
+        // 更新Z-Swing条
+        if (activeTouches.ZSwing === touch.identifier) {
+            updateZSwingSliderFromEvent(e);
         }
     }
 }, { passive: false });
@@ -592,6 +905,27 @@ document.addEventListener('touchend', function(e) {
             activeTouches.pitch = null;
             updateDebugInfo("pitch-info", "Pitch slider touch end");
         }
+
+        // 重置步态周期条
+        if (activeTouches.gaitPeriod === touch.identifier) {
+            gaitPeriodActive = false;
+            activeTouches.gaitPeriod = null;
+            updateDebugInfo("gait-period-info", "Gait period slider touch end");
+        }
+
+        // 重置步态长度条
+        if (activeTouches.gaitLength === touch.identifier) {
+            gaitLengthActive = false;
+            activeTouches.gaitLength = null;
+            updateDebugInfo("gait-length-info", "Gait length slider touch end");
+        }
+
+        // 重置Z-Swing条
+        if (activeTouches.ZSwing === touch.identifier) {
+            zSwingActive = false;
+            activeTouches.ZSwing = null;
+            updateDebugInfo("z-swing-info", "Z-Swing slider touch end");
+        }
     }
 });
 
@@ -619,6 +953,19 @@ document.addEventListener('mousemove', function(e) {
     if (pitchActive) {
         updatePitchSliderFromEvent(e);
     }
+
+    if (gaitPeriodActive) {
+        updateGaitPeriodSliderFromEvent(e);
+    }
+
+    if (gaitLengthActive) {
+        updateGaitLengthSliderFromEvent(e);
+    }
+
+    if (zSwingActive) {
+        updateZSwingSliderFromEvent(e);
+    }
+
 });
 
 // 鼠标抬起处理
@@ -642,6 +989,21 @@ document.addEventListener('mouseup', function() {
         pitchActive = false;
         activeTouches.pitch = null;
         updateDebugInfo("pitch-info", "Pitch slider mouse up");
+    }
+    if (gaitPeriodActive) {
+        gaitPeriodActive = false;
+        activeTouches.gaitPeriod = null;
+        updateDebugInfo("gait-period-info", "Gait period slider mouse up");
+    }
+    if (gaitLengthActive) {
+        gaitLengthActive = false;
+        activeTouches.gaitLength = null;
+        updateDebugInfo("gait-length-info", "Gait length slider mouse up");
+    }
+    if (zSwingActive) {
+        zSwingActive = false;
+        activeTouches.ZSwing = null;
+        updateDebugInfo("z-swing-info", "Z-Swing slider mouse up");
     }
 });
 
@@ -669,7 +1031,6 @@ let config = {
     dead_zone: 0.2, // 死区配置
     _isFallBack: false,
 }
-let buttonTopic;
 let buttonInterval;
 // 重置所有控制器
 function resetAllControls() {
@@ -686,38 +1047,78 @@ function resetAllControls() {
     pitchValue = 0.5;
     initPitchSlider();
     document.getElementById('pitch-value').textContent = '0.50';
+
+    // 重置步态周期滑块
+    gaitPeriodValue = 0;
+    initGaitPeriodSlider();
+    document.getElementById('gait-period-value').textContent = '0.50';
+
+    // 重置步态长度滑块
+    gaitLengthValue = 0;
+    initGaitLengthSlider();
+    document.getElementById('gait-length-value').textContent = '0.50';
+
+    // 重置Z-Swing滑块
+    zSwingValue = 0;
+    initZSwingSlider();
+    document.getElementById('z-swing-value').textContent = '0.50';
     
     // 重置输出值
     leftOutput = { x: 0, y: 0 };
     rightOutput = { x: 0 };
+
+    triggerButton('recover'); // 触发恢复状态
     
     updateDebugInfo("sys-reset", "all controls have been reset");
 }
-function triggerButton(buttonName) {
-    if (!buttonTopic || !connected) {
-        updateDebugInfo("button-error", "Not connected to ROS or button topic not initialized");
+let params = [0,0,0,0,0];
+function onParamsChanged(){
+    if (!paramsTopic || !connected) {
+        updateDebugInfo("params-error", "Not connected to ROS or params topic not initialized");
         return;
     }
-    let count = 0;
-    const maxCount = 1;
-    const intervalTime = 10; // 10ms * 10 = 100ms
+    params = [
+        verticalValue.toFixed(2),
+        pitchValue.toFixed(2),
+        gaitPeriodValue.toFixed(2),
+        gaitLengthValue.toFixed(2),
+        zSwingValue.toFixed(2)
+    ];
+    const paramsMsg = new ROSLIB.Message({
+        data: params
+    });
+    paramsTopic.publish(paramsMsg);
+    updateDebugInfo("params-publish", `Publish params command ${params}`);
+}
+function triggerButton(buttonName) {
+    if (!stateTopic || !connected) {
+        updateDebugInfo("state-error", "Not connected to ROS or state topic not initialized");
+        return;
+    }
+    let stateIndex;
+    switch (buttonName) {
+        case 'flip':
+            stateIndex = 1;
+            break;``
+        case 'jump':
+            stateIndex = 2;
+            break;``
+        case 'recover':
+            stateIndex = 3;
+            break;
+        case null:
+        default:
+            stateIndex = 0; // 默认状态
+            break;
+    }
+    const stateMsg = new ROSLIB.Message({
+        data: stateIndex
+    });
+    stateTopic.publish(stateMsg);
+    document.getElementById('message-count').textContent =
+        parseInt(document.getElementById('message-count').textContent) + 1;
 
-    clearInterval(buttonInterval); // 清除现有定时器
-    buttonInterval = setInterval(() => {
-        if (count >= maxCount) {
-            clearInterval(buttonInterval);
-            return;
-        }
-        const buttonMsg = new ROSLIB.Message({
-            data: buttonName
-        });
-        buttonTopic.publish(buttonMsg);
-        document.getElementById('message-count').textContent =
-            parseInt(document.getElementById('message-count').textContent) + 1;
-        
-        updateDebugInfo("button-publish", `Publish button command ${buttonName} ${count+1}/${maxCount}`);
-        count++;
-    }, intervalTime);
+    updateDebugInfo("state-publish", `Publish state command ${buttonName}`);
 }
 
 // 页面加载完成后初始化
@@ -802,6 +1203,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 let ros = null;
 let cmdVel = null;
 let height = null;
+let paramsTopic = null;
+let stateTopic = null;
 let connected = false;
 
 function startConnection() {
@@ -824,10 +1227,15 @@ function startConnection() {
             name: '/height',
             messageType: 'std_msgs/Float32'
         });
-        buttonTopic = new ROSLIB.Topic({
+        paramsTopic = new ROSLIB.Topic({
             ros: ros,
-            name: '/button',
-            messageType: 'std_msgs/String'
+            name: '/params',
+            messageType: 'std_msgs/Float32MultiArray'
+        });
+        stateTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/state',
+            messageType: 'std_msgs/Int8'
         });
         updateDebugInfo("ros-connection",'Connected to ROS server');
         document.getElementById('connectBtn').textContent = 'Connected';
@@ -835,7 +1243,9 @@ function startConnection() {
         document.getElementById('ros-status').textContent = 'Connected';
         document.getElementById('ros-indicator').className = 'indicator connected';
         connected = true;
-        buttonTopic.publish(new ROSLIB.Message({ data: 'none' }));
+        paramsTopic.publish(new ROSLIB.Message({ data: params }));
+        stateTopic.publish(new ROSLIB.Message({ data: 0 })); // 发布初始状态
+
     });
     ros.on('error', (error) => {
         console.error('Error connecting to ROS: ', error);
