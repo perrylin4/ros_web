@@ -5,8 +5,8 @@
 
 ## 核心功能
 - **/cmd_vel** (geometry_msgs/Twist)：控制机器人线速度和角速度和倾斜角
-- **/height** (std_msgs/Float32)：控制机器人高度（0.0-1.0）
-- **/button** (std_msgs/String): 发出一次性指令
+- **/params** (std_msgs/Float32MultiArray)：控制机器人移动之外的可变参数
+- **/state** (std_msgs/Int8): 发出机器人一次性指令
 
 ## 安装配置
 ### 1. 安装依赖
@@ -23,7 +23,8 @@ sudo apt install ros-humble-rosbridge-server
     "rosbridge_ip": "<你的rosbridge ip,通常是本机局域网中ip>",
     "rosbridge_port": "<你的rosbridge端口,默认是9090>",
     "http_port": "<遥控器端口，访问用>",
-    "publish_interval": "暂时弃用，无需编辑"
+    "publish_interval": "暂时弃用，无需编辑",
+    "dead_zone": "<死区半径>"
 }
 ```
 

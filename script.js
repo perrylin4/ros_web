@@ -1071,18 +1071,18 @@ function resetAllControls() {
     
     updateDebugInfo("sys-reset", "all controls have been reset");
 }
-let params = [0,0,0,0,0];
+let params = [0.0,0.0,0.0,0.0,0.0];
 function onParamsChanged(){
     if (!paramsTopic || !connected) {
         updateDebugInfo("params-error", "Not connected to ROS or params topic not initialized");
         return;
     }
     params = [
-        verticalValue.toFixed(2),
-        pitchValue.toFixed(2),
-        gaitPeriodValue.toFixed(2),
-        gaitLengthValue.toFixed(2),
-        zSwingValue.toFixed(2)
+        verticalValue,
+        pitchValue,
+        gaitPeriodValue,
+        gaitLengthValue,
+        zSwingValue
     ];
     const paramsMsg = new ROSLIB.Message({
         data: params
@@ -1099,10 +1099,10 @@ function triggerButton(buttonName) {
     switch (buttonName) {
         case 'flip':
             stateIndex = 1;
-            break;``
+            break;
         case 'jump':
             stateIndex = 2;
-            break;``
+            break;
         case 'recover':
             stateIndex = 3;
             break;
