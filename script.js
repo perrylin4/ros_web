@@ -562,6 +562,7 @@ const rightJoystickInner = document.getElementById('right-inner');
 const resetButton = document.getElementById('reset-all');
 const jumpButton = document.getElementById('jump-btn');
 const flipButton = document.getElementById('flip-btn');
+const navigationButton = document.getElementById('navigation-btn');
 const crawButton = document.getElementById('craw-btn');
 const sandpitButton = document.getElementById('sandpit-btn');
 const straightupButton = document.getElementById('straightup-btn');
@@ -821,6 +822,11 @@ document.addEventListener('touchstart', function(e) {
             e.preventDefault();
             updateDebugInfo("straightup-button", "Straight Up button touched");
         }
+        if (touch.target === navigationButton) {
+            navigationButton.dispatchEvent(new TouchEvent('click'));
+            e.preventDefault();
+            updateDebugInfo("navigation-button", "Navigation button touched");
+        }
     }
 })
 
@@ -1051,17 +1057,17 @@ function resetAllControls() {
     // 重置步态周期滑块
     gaitPeriodValue = 0;
     initGaitPeriodSlider();
-    document.getElementById('gait-period-value').textContent = '0.50';
+    document.getElementById('gait-period-value').textContent = '0.00';
 
     // 重置步态长度滑块
     gaitLengthValue = 0;
     initGaitLengthSlider();
-    document.getElementById('gait-length-value').textContent = '0.50';
+    document.getElementById('gait-length-value').textContent = '0.00';
 
     // 重置Z-Swing滑块
     zSwingValue = 0;
     initZSwingSlider();
-    document.getElementById('z-swing-value').textContent = '0.50';
+    document.getElementById('z-swing-value').textContent = '0.00';
     
     // 重置输出值
     leftOutput = { x: 0, y: 0 };
@@ -1105,6 +1111,9 @@ function triggerButton(buttonName) {
             break;
         case 'recover':
             stateIndex = 3;
+            break;
+        case 'navigation':
+            stateIndex = 4;
             break;
         case null:
         default:
@@ -1199,6 +1208,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const sideslopeBtn = document.getElementById('sideslope-btn');
     sideslopeBtn.addEventListener('click', () => triggerButton('sideslope'));
+
+    const navigationBtn = document.getElementById('navigation-btn');
+    navigationBtn.addEventListener('click', () => triggerButton('navigation'));
 });
 let ros = null;
 let cmdVel = null;
