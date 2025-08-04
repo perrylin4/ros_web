@@ -1,7 +1,7 @@
 # ROS网页遥控器系统使用指南
 
 ## 项目概述
-通过rosbridge实现Web与ROS2通信的三指触控遥控系统，支持多点触控操作，适配移动设备。
+通过rosbridge实现Web与ROS2通信的多指触控遥控系统，支持多点触控操作，适配移动设备。
 
 ## 核心功能
 - **/cmd_vel** (geometry_msgs/Twist)：控制机器人线速度和角速度和倾斜角
@@ -21,7 +21,7 @@ sudo apt install ros-humble-rosbridge-server
 ```json
 {
     "rosbridge_ip": "<你的rosbridge ip,通常是本机局域网中ip>",
-    "rosbridge_port": "<你的rosbridge端口,默认是9090>",
+    "rosbridge_port": "<你的rosbridge端口,默认是9091>",
     "http_port": "<遥控器端口，访问用>",
     "publish_interval": "暂时弃用，无需编辑",
     "dead_zone": "<死区半径>"
@@ -37,4 +37,5 @@ bash ./launch.sh
 
 ### 4.操作说明
 支持4指同时操作，左摇杆控制相对于机器方向的移动方向，右摇杆仅左右有用，控制转向速度，高度表控制机器人身体高度
+建议使用平板等页面分辨率高于1180*660的机器使用（两者均要高于这个值）
 > 测试环境：ROS humble + python3.10
