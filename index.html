@@ -44,19 +44,11 @@
         <button class="action-btn" id="navigation-btn">navigation</button>
         <button class="action-btn" id="flip-btn">flip</button>
     </div>
-
-    <button class="craw-btn" id="craw-btn">Craw</button>
-    <button class="sandpit-btn" id="sandpit-btn">Sandpit</button>
-    <button class="straightup-btn" id="straightup-btn">StraightUp</button>
-    <button class="stairs-btn" id="stairs-btn">Stairs</button>
-    <button class="slope-btn" id="slope-btn">Slope</button>
-    <button class="sideslope-btn" id="sideslope-btn">Sideslope</button>
-    
     
     <!-- 控制区域 -->
     <div class="controls-wrapper">
         <!-- 左侧摇杆 - 移动控制 -->
-        <div class="joystick-container" style="order: 0;">
+        <div class="joystick-container" data-joystick="joystick1">
             <div class="joystick-label">Movement</div>
             <div class="joystick-outer" id="left-outer">
                 <div class="joystick-inner" id="left-inner"></div>
@@ -86,7 +78,7 @@
         <!-- 步态最小周期 -->
         <div class="gait-period-container">
             <div class="gait-period-label">Gait Period</div>
-            <svg width="100" height="250" class="slider-svg">
+            <svg width="100" height="250" class="slider-svg" id="gait-period-svg">
                 <!-- 轨道路径 -->
                 <path id="gait-period-track-path"
                     d="M 50 180 L 50 20" stroke="#00549e"
@@ -106,7 +98,7 @@
         <!-- 摆动高度 -->
         <div class="z-swing-container">
             <div class="z-swing-label">Z-Swing</div>
-            <svg width="350" height="100" class="slider-svg">
+            <svg width="350" height="100" class="slider-svg" id="z-swing-svg">
                 <!-- 轨道路径 -->
                 <path id="z-swing-track-path"
                     d="M 20 50 L 320 50" stroke="#00549e"
@@ -126,16 +118,16 @@
         <!-- 步长 -->
         <div class="gait-length-container">
             <div class="gait-length-label">Gait Length</div>
-            <svg width="120" height="200" class="slider-svg">
+            <svg width="120" height="200" class="slider-svg" id="gait-length-svg">
                 <!-- 轨道路径 -->
                 <path id="gait-length-track-path" 
-                    d="M 50 180 L 50 20" stroke="#00549e"
+                    d="M 60 180 L 60 20" stroke="#00549e"
                     stroke-width="30" fill="none"
                     stroke-linecap="round"/>
                 
                 <!-- 填充路径 -->
                 <path id="gait-length-fill-path" 
-                     d="M 50 180 L 50 100" stroke="#ff7d3c" 
+                     d="M 60 180 L 60 100" stroke="#ff7d3c" 
                      stroke-width="30" fill="none" 
                      stroke-linecap="round"/>
             </svg>
@@ -164,12 +156,19 @@
         </div>
         
         <!-- 右侧摇杆 - 旋转控制 -->
-        <div class="joystick-container" style="order: 2;">
+        <div class="joystick-container" data-joystick="joystick2">
             <div class="joystick-label">Spin</div>
             <div class="joystick-outer" id="right-outer">
                 <div class="joystick-inner" id="right-inner"></div>
             </div>
         </div>
+
+        <button class="craw-btn" id="craw-btn">Craw</button>
+        <button class="sandpit-btn" id="sandpit-btn">Sandpit</button>
+        <button class="straightup-btn" id="straightup-btn">StraightUp</button>
+        <button class="stairs-btn" id="stairs-btn">Stairs</button>
+        <button class="slope-btn" id="slope-btn">Slope</button>
+        <button class="sideslope-btn" id="sideslope-btn">Sideslope</button>
     </div>
     
     <!-- 坐标显示面板 -->

@@ -51,7 +51,7 @@ body {
     align-items: center;
     gap: 8px;
     background: rgba(40, 70, 120, 0.5);
-    padding: 8极速码字px 15px;
+    padding: 8px 15px;
     border-radius: 30px;
     min-width: 140px;
 }
@@ -155,47 +155,42 @@ body {
 /* 控制区域 */
 .controls-wrapper {
     position: fixed;
-    bottom: 20px;
+    bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    height: 70%;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     z-index: 20;
     padding: 0;
+    /* background-color: #0072ff; */
 }
 
 /* 摇杆容器 */
 .joystick-container {
-    height: 400px;
-    width: 400px;
+    height: 250px;
+    width: 225px;
     display: flex;
-    position: relative;
+    position: fixed;
     flex-direction: column;
-    flex: 0 0 200px;
-    margin: 0 0 -10% 0;
 }
 
-.joystick-container[style*="order: 0"] {
-    display: flex;
+.joystick-container[data-joystick="joystick1"] {
     flex-direction: column;
     align-items: center;
-    height: 400px;
-    position: relative;
     flex: 0 0 100px;
-    margin: 0 0 -160px 0;
-    left: 2%;
+    left: 0;
+    /* background-color: hsl(239, 100%, 50%); */
 }
 
-.joystick-container[style*="order: 2"] {
-    display: flex;
+.joystick-container[data-joystick="joystick2"] {
     flex-direction: column;
     align-items: center;
-    height: 400px;
-    position: relative;
     flex: 0 0 100px;
-    margin: 0 0 -160px 0;
-    right: 16%;
+    right: 0;
+    /* background-color: #00ffaa; */
 }
 
 .joystick-label {
@@ -272,17 +267,19 @@ body {
     flex-direction: column;
     align-items: center;
     height: 255px;
-    position: relative;
+    position: absolute;
     flex: 0 0 100px;
-    margin: 0 0 250px 0;
-    order: 0;
-    right: 180px;
+    bottom: 250px;
+    left: 0;
+    /* background-color: #ff416c; */
 }
 
 
 .vertical-slider-label {
     font-size: 18px;
-    margin-bottom: 8px;
+    position: relative;
+    left: 40%;
+    top: 20%;
     color: #ffffff;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     font-weight: 700;
@@ -317,16 +314,18 @@ body {
     flex-direction: column;
     align-items: center;
     height: 255px;
-    position: relative;
+    position: absolute;
     flex: 0 0 100px;
-    margin: 0 0 250px 0px;
-    order: 2;
-    left: -20px;
+    bottom: 235px;
+    right: 0;
+    /* background-color: #ff5722; */
 }
 
 .pitch-slider-label {
     font-size: 18px;
-    margin-bottom: 8px;
+    position: relative;
+    right: 40%;
+    top: 20%;
     color: #ffffff;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     font-weight: 700;
@@ -360,11 +359,11 @@ body {
     flex-direction: column;
     align-items: center;
     height: 230px;
-    position: relative;
-    flex: 0 0 100px;
-    margin: 0 0 0px 0px;
-    order: 0;
-    right: 18%;
+    position: absolute;
+    left: 225px;
+    bottom: 10px;
+    z-index: 5;
+    /* background-color: crimson; */
 }
 .gait-period-label {
     font-size: 18px;
@@ -400,11 +399,11 @@ body {
     flex-direction: column;
     align-items: center;
     height: 230px;
-    position: relative;
-    flex: 0 0 100px;
-    margin: 0 0 0px 0px;
-    order: 2;
-    left: 5%;
+    position: absolute;
+    right: 225px;
+    bottom: 10px;
+    z-index: 5;
+    /* background-color: #ff5722; */
 }
 .gait-length-label {
     font-size: 18px;
@@ -419,7 +418,7 @@ body {
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ff9966, #ff5500);
     position: absolute;
-    left: 25px;
+    left: 35px;
     top: 100px;
     cursor: pointer;
     z-index: 10;
@@ -439,11 +438,11 @@ body {
     flex-direction: column;
     align-items: center;
     height: 100px;
-    position: relative;
+    position: absolute;
     flex: 0 0 100px;
     margin: 0 0 350px 0px;
-    order: 1;
-    right: 6%;
+    right: calc(50% - 175px);
+    /* background-color: #00ffaa; */
 }
 .z-swing-label {
     font-size: 18px;
@@ -607,8 +606,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 15%;
-    left: 25%;
+    bottom: 50px;
+    left: 330px;
     z-index: 110;
 }
 
@@ -626,8 +625,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 15%;
-    right: 25%;
+    bottom: 40px;
+    right: 340px;
     z-index: 110;
 }
 
@@ -645,8 +644,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 23%;
-    left: 25%;
+    bottom: 100px;
+    left: 330px;
     z-index: 110;
 }
 
@@ -664,8 +663,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 31%;
-    left: 25%;
+    bottom: 150px;
+    left: 330px;
     z-index: 110;
 }
 
@@ -683,8 +682,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 23%;
-    right: 25%;
+    bottom: 90px;
+    right: 340px;
     z-index: 110;
 }
 
@@ -702,8 +701,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: all 0.3s;
     position: absolute;
-    bottom: 31%;
-    right: 25%;
+    bottom: 140px;
+    right: 340px;
     z-index: 110;
 }
 
@@ -784,7 +783,6 @@ body {
     }
     
     .vertical-slider-container {
-        order: 3;
         flex: 0 0 80%;
         height: 80px;
         margin-top: 20px;

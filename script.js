@@ -314,6 +314,9 @@ function updatePitchSliderFromEvent(event) {
 }
 
 const gaitPeriodContainer = document.querySelector('.gait-period-container');
+const gaitPeriodSVG = document.getElementById('gait-period-svg');
+const gaitPeriodTrackPath = document.getElementById('gait-period-track-path');
+const gaitPeriodFillPath = document.getElementById('gait-period-fill-path');
 const gaitPeriodKnob = document.getElementById('gait-period-knob');
 let gaitPeriodValue = 0;
 let gaitPeriodActive = false;
@@ -355,7 +358,8 @@ function startDragGaitPeriod(event) {
 
     if (event.touches) {
         for (let i = 0; i < event.touches.length; i++) {
-            if (event.touches[i].target === gaitPeriodKnob || event.touches[i].target === gaitPeriodContainer) {
+            const target = event.touches[i].target;
+            if (target === gaitPeriodKnob || target === gaitPeriodContainer || target === gaitPeriodSVG || target === gaitPeriodTrackPath || target === gaitPeriodFillPath) {
                 activeTouches.gaitPeriod = event.touches[i].identifier;
                 break;
             }
@@ -371,7 +375,7 @@ function updateGaitPeriodSliderFromEvent(event) {
     if (event.type == 'touchmove') {
         for (let i = 0; i < event.touches.length; i++) {
             if (event.touches[i].identifier === activeTouches.gaitPeriod) {
-                mouseY = event.touches[i].clientY;
+                mouseY = event.touches[i].clientY - 25;
                 break;
             }
         }
@@ -392,6 +396,9 @@ function updateGaitPeriodSliderFromEvent(event) {
 }
 
 const gaitLengthContainer = document.querySelector('.gait-length-container');
+const gaitLengthSVG = document.getElementById('gait-length-svg');
+const gaitLengthTrackPath = document.getElementById('gait-length-track-path');
+const gaitLengthFillPath = document.getElementById('gait-length-fill-path');
 const gaitLengthKnob = document.getElementById('gait-length-knob');
 let gaitLengthValue = 0;
 let gaitLengthActive = false;
@@ -415,11 +422,11 @@ function updateGaitLengthFillPath(progress) {
     const path = document.getElementById('gait-length-fill-path');
     const segments = 20;
 
-    let d = `M 50, ${gaitLengthStartY}`;
+    let d = `M 60, ${gaitLengthStartY}`;
     for (let i = 0; i <= segments; i++) {
         const p = Math.min(i / segments, progress);
         const y = gaitLengthStartY - p * gaitLengthSliderHeight;
-        d += ` L${50},${y}`;
+        d += ` L${60},${y}`;
     }
 
     path.setAttribute('d', d);
@@ -432,7 +439,8 @@ function startDragGaitLength(event) {
 
     if (event.touches) {
         for (let i = 0; i < event.touches.length; i++) {
-            if (event.touches[i].target === gaitLengthKnob || event.touches[i].target === gaitLengthContainer) {
+            const target = event.touches[i].target;
+            if (target === gaitLengthKnob || target === gaitLengthContainer || target === gaitLengthSVG || target === gaitLengthTrackPath || target === gaitLengthFillPath) {
                 activeTouches.gaitLength = event.touches[i].identifier;
                 break;
             }
@@ -448,7 +456,7 @@ function updateGaitLengthSliderFromEvent(event) {
     if (event.type == 'touchmove') {
         for (let i = 0; i < event.touches.length; i++) {
             if (event.touches[i].identifier === activeTouches.gaitLength) {
-                mouseY = event.touches[i].clientY;
+                mouseY = event.touches[i].clientY - 25;
                 break;
             }
         }
@@ -469,6 +477,9 @@ function updateGaitLengthSliderFromEvent(event) {
 }
 
 const zSwingContainer = document.querySelector('.z-swing-container');
+const zSwingSVG = document.getElementById('z-swing-svg');
+const zSwingTrackPath = document.getElementById('z-swing-track-path');
+const zSwingFillPath = document.getElementById('z-swing-fill-path');
 const zSwingKnob = document.getElementById('z-swing-knob');
 let zSwingValue = 0;
 let zSwingActive = false;
@@ -509,7 +520,8 @@ function startDragZSwing(event) {
 
     if (event.touches) {
         for (let i = 0; i < event.touches.length; i++) {
-            if (event.touches[i].target === zSwingKnob || event.touches[i].target === zSwingContainer) {
+            const target = event.touches[i].target;
+            if (target === zSwingKnob || target === zSwingContainer || target === zSwingSVG || target === zSwingTrackPath || target === zSwingFillPath) {
                 activeTouches.ZSwing = event.touches[i].identifier;
                 break;
             }
