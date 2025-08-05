@@ -31,6 +31,10 @@ async function loadConfig() {
 let leftOutput = { x: 0, y: 0 };
 let rightOutput = { x: 0 };
 
+let window_width = document.documentElement.clientWidth;
+let window_height = document.documentElement.clientHeight;
+let size_multiplier = 1.0;
+
 // 活动触摸点记录
 let activeTouches = {
     left: null,
@@ -69,19 +73,19 @@ function initPitchSlider() {
 function applyVerticalCurveTransform(progress) {
     return getPointOnBezierCurve(
         progress,
-        verticalBezierCurvePoints.p0,
-        verticalBezierCurvePoints.p1,
-        verticalBezierCurvePoints.p2,
-        verticalBezierCurvePoints.p3
+        verticalBezierCurvePoints.p0*size_multiplier,
+        verticalBezierCurvePoints.p1*size_multiplier,
+        verticalBezierCurvePoints.p2*size_multiplier,
+        verticalBezierCurvePoints.p3*size_multiplier
     );
 }
 function applyPitchCurveTransform(progress) {
     return getPointOnBezierCurve(
         progress,
-        pitchBezierCurvePoints.p0,
-        pitchBezierCurvePoints.p1,
-        pitchBezierCurvePoints.p2,
-        pitchBezierCurvePoints.p3
+        pitchBezierCurvePoints.p0*size_multiplier,
+        pitchBezierCurvePoints.p1*size_multiplier,
+        pitchBezierCurvePoints.p2*size_multiplier,
+        pitchBezierCurvePoints.p3*size_multiplier
     );
 }
 const verticalBezierCurvePoints = {
@@ -121,8 +125,8 @@ function updateVerticalSliderPostion(progress) {
     console.info(`Updating vertical slider position: ${verticalValue}`);
     const knobPosition = applyVerticalCurveTransform(progress);
 
-    verticalSliderKnob.style.left = `${knobPosition.x}px`;
-    verticalSliderKnob.style.top = `${knobPosition.y}px`;
+    verticalSliderKnob.style.left = `${knobPosition.x*size_multiplier}px`;
+    verticalSliderKnob.style.top = `${knobPosition.y*size_multiplier}px`;
 
     updateVerticalFillPath(progress);
 }
@@ -133,8 +137,8 @@ function updatePitchSliderPosition(progress) {
     console.info(`Updating pitch slider position: ${pitchValue}`);
     const knobPosition = applyPitchCurveTransform(progress);
 
-    pitchSliderKnob.style.left = `${knobPosition.x}px`;
-    pitchSliderKnob.style.top = `${knobPosition.y}px`;
+    pitchSliderKnob.style.left = `${knobPosition.x*size_multiplier}px`;
+    pitchSliderKnob.style.top = `${knobPosition.y*size_multiplier}px`;
 
     updatePitchFillPath(progress);
 }
@@ -143,7 +147,7 @@ function updateVerticalFillPath(progress) {
     const path = document.getElementById('vertical-fill-path');
     const segments = 20;
 
-    let d = `M200, 200`;
+    let d = `M${200 * size_multiplier}, ${200 * size_multiplier}`;
     for (let i = 0; i <= segments; i++) {
         const p = Math.min(i / segments, progress);
         const point = applyVerticalCurveTransform(p);
@@ -151,13 +155,14 @@ function updateVerticalFillPath(progress) {
     }
 
     path.setAttribute('d', d);
+    path.setAttribute('stroke-width', 30 * size_multiplier);
 }
 
 function updatePitchFillPath(progress) {
     const path = document.getElementById('pitch-fill-path');
     const segments = 20;
 
-    let d = `M55, 200`;
+    let d = `M${55 * size_multiplier}, ${200 * size_multiplier}`;
     for (let i = 0; i <= segments; i++) {
         const p = Math.min(i / segments, progress);
         const point = applyPitchCurveTransform(p);
@@ -165,6 +170,7 @@ function updatePitchFillPath(progress) {
     }
 
     path.setAttribute('d', d);
+    path.setAttribute('stroke-width', 30 * size_multiplier);
 }
 
 verticalSliderContainer.addEventListener('touchstart', (event) => {
@@ -430,6 +436,9 @@ function updateGaitLengthFillPath(progress) {
     }
 
     path.setAttribute('d', d);
+
+    const track = document.getElementById('gait-length-track-path');
+    d = `M ${60 * size_multiplier}, ${gaitLengthStartY * size_multiplier} L ${60 * size_multiplier}, ${(gaitLengthStartY - gaitLengthSliderHeight) * size_multiplier}`;
 }
 gaitLengthContainer.addEventListener('touchstart', startDragGaitLength);
 gaitLengthContainer.addEventListener('mousedown', startDragGaitLength);
@@ -1089,7 +1098,7 @@ function resetAllControls() {
     
     updateDebugInfo("sys-reset", "all controls have been reset");
 }
-let params = [0.0,0.0,0.0,0.0,0.0];
+let params = [0.5,0.5,0.0,0.0,0.0];
 function onParamsChanged(){
     if (!paramsTopic || !connected) {
         updateDebugInfo("params-error", "Not connected to ROS or params topic not initialized");
@@ -1182,7 +1191,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('resize', function() {
         initVerticalSlider();
         initPitchSlider();
-        updateDebugInfo("sys-info",'Recalculating positions');
+        if (window_height < 700 || window_width < 1200) {
+            size_multiplier = Math.min(window_width / 1200, window_height / 700);
+        }
+        else{
+            size_multiplier = 1.0; // 恢复默认大小
+        }
+        updateDebugInfo("sys-info",'Recalculating positions with size multiplier: ' + size_multiplier);
     });
     // 在初始化部分添加防抖的resize处理
     let resizeTimer;
@@ -1192,6 +1207,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             initVerticalSlider();
             updateDebugInfo("sys-info",'Window resize complete');
         }, 500); // 500ms防抖
+        window_height = this.document.documentElement.clientHeight;
+        window_width = this.document.documentElement.clientWidth;
     });
     // 添加重置按钮事件
     document.getElementById('reset-all').addEventListener('click', resetAllControls);
