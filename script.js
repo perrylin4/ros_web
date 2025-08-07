@@ -318,7 +318,7 @@ const gaitPeriodSVG = document.getElementById('gait-period-svg');
 const gaitPeriodTrackPath = document.getElementById('gait-period-track-path');
 const gaitPeriodFillPath = document.getElementById('gait-period-fill-path');
 const gaitPeriodKnob = document.getElementById('gait-period-knob');
-let gaitPeriodValue = 0;
+let gaitPeriodValue = 0.3;
 let gaitPeriodActive = false;
 const gaitPeriodStartY = 180;
 let gaitPeriodSliderHeight = 160;
@@ -400,7 +400,7 @@ const gaitLengthSVG = document.getElementById('gait-length-svg');
 const gaitLengthTrackPath = document.getElementById('gait-length-track-path');
 const gaitLengthFillPath = document.getElementById('gait-length-fill-path');
 const gaitLengthKnob = document.getElementById('gait-length-knob');
-let gaitLengthValue = 0;
+let gaitLengthValue = 0.5;
 let gaitLengthActive = false;
 const gaitLengthStartY = 180;
 let gaitLengthSliderHeight = 160;
@@ -481,7 +481,7 @@ const zSwingSVG = document.getElementById('z-swing-svg');
 const zSwingTrackPath = document.getElementById('z-swing-track-path');
 const zSwingFillPath = document.getElementById('z-swing-fill-path');
 const zSwingKnob = document.getElementById('z-swing-knob');
-let zSwingValue = 0;
+let zSwingValue = 0.3;
 let zSwingActive = false;
 const zSwingStartX = 20;
 let zSwingSliderWidth = 300;
@@ -1089,7 +1089,7 @@ function resetAllControls() {
     
     updateDebugInfo("sys-reset", "all controls have been reset");
 }
-let params = [0.0,0.0,0.0,0.0,0.0];
+let params = [0.5,0.5,0.3,0.5,0.3];
 function onParamsChanged(){
     if (!paramsTopic || !connected) {
         updateDebugInfo("params-error", "Not connected to ROS or params topic not initialized");
@@ -1126,6 +1126,24 @@ function triggerButton(buttonName) {
             break;
         case 'navigation':
             stateIndex = 4;
+            break;
+        case 'craw':
+            stateIndex = 5;
+            break;
+        case 'sandpit':
+            stateIndex = 6;
+            break;
+        case 'straightup':
+            stateIndex = 7;
+            break;
+        case 'stairs':
+            stateIndex = 8;
+            break;
+        case 'slope':
+            stateIndex = 9;
+            break;
+        case 'sideslope':
+            stateIndex = 10;
             break;
         case null:
         default:
