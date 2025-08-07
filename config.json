@@ -1,5 +1,5 @@
 {
-    "rosbridge_ip": "192.168.31.248",
+    "rosbridge_ip": "127.0.0.1",
     "rosbridge_port": "9091",
     "http_port": 8080,
     "publish_interval": 10,
